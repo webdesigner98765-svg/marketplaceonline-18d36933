@@ -104,6 +104,7 @@ const Index = () => {
             <Filters
               selectedCategory={selectedCategory}
               selectedLocation={selectedLocation}
+              selectedCountry={selectedCountry}
               onCategoryChange={setSelectedCategory}
               onLocationChange={setSelectedLocation}
               onReset={() => {
