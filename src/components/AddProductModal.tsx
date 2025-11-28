@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Upload } from "lucide-react";
 import {
   Dialog,
@@ -36,16 +36,12 @@ const categories = [
   "Tjetër",
 ];
 
-const locations = [
-  "Tiranë",
-  "Durrës",
-  "Vlorë",
-  "Shkodër",
-  "Elbasan",
-  "Korçë",
-  "Fier",
-  "Berat",
-];
+const locationsByCountry: { [key: string]: string[] } = {
+  al: ["Tiranë", "Durrës", "Vlorë", "Shkodër", "Elbasan", "Korçë", "Fier", "Berat"],
+  xk: ["Prishtinë", "Prizren", "Pejë", "Gjakovë", "Gjilan", "Ferizaj", "Mitrovicë"],
+  mk: ["Shkup", "Tetovë", "Gostivar", "Strugë", "Kumanovë", "Dibër"],
+  me: ["Podgoricë", "Ulqin", "Tuzi", "Plavë", "Rozhajë", "Bar"],
+};
 
 export const AddProductModal = ({ open, onClose }: AddProductModalProps) => {
   const [title, setTitle] = useState("");
@@ -53,6 +49,12 @@ export const AddProductModal = ({ open, onClose }: AddProductModalProps) => {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [location, setLocation] = useState("");
+  const [availableLocations, setAvailableLocations] = useState<string[]>([]);
+
+  useEffect(() => {
+    const savedCountry = localStorage.getItem("selectedCountry") || "al";
+    setAvailableLocations(locationsByCountry[savedCountry] || locationsByCountry.al);
+  }, [open]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -131,7 +133,7 @@ export const AddProductModal = ({ open, onClose }: AddProductModalProps) => {
                 <SelectValue placeholder="Zgjidh qytetin" />
               </SelectTrigger>
               <SelectContent>
-                {locations.map((loc) => (
+                {availableLocations.map((loc) => (
                   <SelectItem key={loc} value={loc}>
                     {loc}
                   </SelectItem>
