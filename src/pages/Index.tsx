@@ -1,82 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { ProductCard } from "@/components/ProductCard";
 import { AddProductModal } from "@/components/AddProductModal";
 import { Filters } from "@/components/Filters";
-import heroImage from "@/assets/hero-image.jpg";
-import { Sparkles } from "lucide-react";
-
-// Mock data
-const mockProducts = [
-  {
-    id: "1",
-    title: "iPhone 14 Pro 256GB",
-    price: 899,
-    image: "https://images.unsplash.com/photo-1678685888221-cda773a3dcdb?w=500&q=80",
-    location: "Tiranë",
-    category: "Elektronikë",
-    rating: 4.5,
-    reviewCount: 12,
-  },
-  {
-    id: "2",
-    title: "Sofë moderne 3-vendësh",
-    price: 450,
-    image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500&q=80",
-    location: "Durrës",
-    category: "Mobilje",
-    rating: 5,
-    reviewCount: 8,
-  },
-  {
-    id: "3",
-    title: "MacBook Pro M2",
-    price: 1899,
-    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&q=80",
-    location: "Tiranë",
-    category: "Elektronikë",
-    rating: 4.8,
-    reviewCount: 15,
-  },
-  {
-    id: "4",
-    title: "Biçikletë Malesh",
-    price: 380,
-    image: "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?w=500&q=80",
-    location: "Vlorë",
-    category: "Sport",
-    rating: 4.2,
-    reviewCount: 6,
-  },
-  {
-    id: "5",
-    title: "Kamera Canon EOS R6",
-    price: 2100,
-    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500&q=80",
-    location: "Shkodër",
-    category: "Elektronikë",
-    rating: 4.9,
-    reviewCount: 20,
-  },
-  {
-    id: "6",
-    title: "Tavolinë druri natyral",
-    price: 180,
-    image: "https://images.unsplash.com/photo-1571898153097-63d0b2301f8c?w=500&q=80",
-    location: "Elbasan",
-    category: "Mobilje",
-    rating: 4.3,
-    reviewCount: 9,
-  },
-];
+import { CountrySelectModal } from "@/components/CountrySelectModal";
+import { Button } from "@/components/ui/button";
+import heroImage from "@/assets/home-interior.jpg";
+import { Sparkles, Package } from "lucide-react";
 
 const Index = () => {
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showCountryModal, setShowCountryModal] = useState(true);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedLocation, setSelectedLocation] = useState("all");
 
-  const filteredProducts = mockProducts.filter((product) => {
+  const handleCountrySelect = (country: string) => {
+    setSelectedCountry(country);
+    setShowCountryModal(false);
+    localStorage.setItem("selectedCountry", country);
+  };
+
+  useEffect(() => {
+    const savedCountry = localStorage.getItem("selectedCountry");
+    if (savedCountry) {
+      setSelectedCountry(savedCountry);
+      setShowCountryModal(false);
+    }
+  }, []);
+
+  // No products initially - empty array
+  const products: any[] = [];
+
+  const filteredProducts = products.filter((product) => {
     const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
     const matchesLocation = selectedLocation === "all" || product.location.toLowerCase() === selectedLocation;
@@ -84,8 +41,20 @@ const Index = () => {
     return matchesSearch && matchesCategory && matchesLocation;
   });
 
+  const getCountryName = (code: string) => {
+    const countries: { [key: string]: string } = {
+      al: "Shqipëri",
+      xk: "Kosovë",
+      mk: "Maqedoni e Veriut",
+      me: "Mali i Zi",
+    };
+    return countries[code] || code;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-hero">
+      <CountrySelectModal open={showCountryModal} onSelectCountry={handleCountrySelect} />
+
       <Header
         onAddProduct={() => setShowAddModal(true)}
         searchQuery={searchQuery}
@@ -97,7 +66,7 @@ const Index = () => {
         <div className="absolute inset-0">
           <img
             src={heroImage}
-            alt="Marketplace hero"
+            alt="Home interior"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/70 to-transparent" />
@@ -117,6 +86,12 @@ const Index = () => {
             <p className="text-xl text-muted-foreground">
               Mijëra produkte nga njerëz të vërtetë. Posto shpejt, bej pazare lehtë.
             </p>
+            {selectedCountry && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Package className="w-4 h-4" />
+                <span>Produkte nga {getCountryName(selectedCountry)}</span>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -141,27 +116,40 @@ const Index = () => {
 
           {/* Products Grid */}
           <div className="flex-1">
-            <div className="mb-6">
+            <div className="mb-6 flex items-center justify-between">
               <h3 className="text-2xl font-bold">
                 {filteredProducts.length} produkte të gjetura
               </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowCountryModal(true)}
+                className="text-muted-foreground"
+              >
+                Ndrysho shtetin
+              </Button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  {...product}
-                  onClick={() => console.log("Product clicked:", product.id)}
-                />
-              ))}
-            </div>
-
-            {filteredProducts.length === 0 && (
-              <div className="text-center py-16">
-                <p className="text-muted-foreground text-lg">
-                  Nuk u gjet asnjë produkt. Provo të ndryshosh filtrat.
+            {filteredProducts.length === 0 ? (
+              <div className="text-center py-20 bg-card rounded-xl border border-border">
+                <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+                <h4 className="text-xl font-semibold mb-2">Nuk ka produkte akoma</h4>
+                <p className="text-muted-foreground mb-6">
+                  Ji i pari që posto një produkt në {selectedCountry && getCountryName(selectedCountry)}!
                 </p>
+                <Button onClick={() => setShowAddModal(true)} variant="accent" size="lg">
+                  Posto Produktin e Parë
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredProducts.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    {...product}
+                    onClick={() => console.log("Product clicked:", product.id)}
+                  />
+                ))}
               </div>
             )}
           </div>
