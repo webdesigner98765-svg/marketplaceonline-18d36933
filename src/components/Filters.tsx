@@ -72,17 +72,17 @@ export const Filters = ({
 }: FiltersProps) => {
   const locations = selectedCountry ? locationsByCountry[selectedCountry] : locationsByCountry.al;
   return (
-    <div className="bg-card border border-border rounded-xl p-6 shadow-card">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-lg">Filtro</h3>
-        <Button variant="ghost" size="sm" onClick={onReset}>
+    <div className="bg-gradient-to-br from-card to-card/50 border border-border/50 rounded-2xl p-6 shadow-card sticky top-24">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="font-display font-bold text-xl">Filtro</h3>
+        <Button variant="ghost" size="sm" onClick={onReset} className="hover:bg-primary/10">
           Pastro
         </Button>
       </div>
 
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Kategoria</label>
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <label className="text-sm font-semibold text-foreground/80">Kategoria</label>
           <Select value={selectedCategory} onValueChange={onCategoryChange}>
             <SelectTrigger>
               <SelectValue placeholder="Zgjidh kategorinë" />
@@ -97,8 +97,8 @@ export const Filters = ({
           </Select>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Vendndodhja</label>
+        <div className="space-y-3">
+          <label className="text-sm font-semibold text-foreground/80">Vendndodhja</label>
           <Select value={selectedLocation} onValueChange={onLocationChange}>
             <SelectTrigger>
               <SelectValue placeholder="Zgjidh vendndodhjen" />
