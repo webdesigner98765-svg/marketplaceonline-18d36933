@@ -14,7 +14,6 @@ const Index = () => {
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedLocation, setSelectedLocation] = useState("all");
 
   const handleCountrySelect = (country: string) => {
     setSelectedCountry(country);
@@ -36,19 +35,53 @@ const Index = () => {
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
-    const matchesLocation = selectedLocation === "all" || product.location.toLowerCase() === selectedLocation;
     
-    return matchesSearch && matchesCategory && matchesLocation;
+    return matchesSearch && matchesCategory;
   });
 
   const getCountryName = (code: string) => {
-    const countries: { [key: string]: string } = {
-      al: "Shqipëri",
-      xk: "Kosovë",
-      mk: "Maqedoni e Veriut",
-      me: "Mali i Zi",
+    const countryNames: { [key: string]: string } = {
+      af: "Afganistan", al: "Shqipëri", dz: "Algjeri", ad: "Andorrë", ao: "Angolë",
+      ar: "Argjentinë", am: "Armeni", au: "Australi", at: "Austri", az: "Azerbajxhan",
+      bs: "Bahamas", bh: "Bahrain", bd: "Bangladesh", bb: "Barbados", by: "Bjellorusi",
+      be: "Belgjikë", bz: "Belizë", bj: "Benin", bt: "Butan", bo: "Bolivi",
+      ba: "Bosnjë e Hercegovinë", bw: "Botsvanë", br: "Brazil", bn: "Brunei", bg: "Bullgari",
+      bf: "Burkina Faso", bi: "Burundi", cv: "Kabo Verde", kh: "Kamboxhia", cm: "Kamerun",
+      ca: "Kanada", cf: "Republika e Afrikës Qendrore", td: "Çad", cl: "Kili", cn: "Kinë",
+      co: "Kolumbi", km: "Komore", cg: "Kongo", cd: "Republika Demokratike e Kongos", cr: "Kosta Rikë",
+      ci: "Bregu i Fildishtë", hr: "Kroaci", cu: "Kubë", cy: "Qipro", cz: "Republika Çeke",
+      dk: "Danimarkë", dj: "Xhibuti", dm: "Dominikë", do: "Republika Dominikane", ec: "Ekuador",
+      eg: "Egjipt", sv: "Salvador", gq: "Guineja Ekuatoriale", er: "Eritre", ee: "Estoni",
+      sz: "Esuatini", et: "Etiopi", fj: "Fixhi", fi: "Finlandë", fr: "Francë",
+      ga: "Gabon", gm: "Gambia", ge: "Gjeorgji", de: "Gjermani", gh: "Ganë",
+      gr: "Greqi", gd: "Grenadë", gt: "Guatemalë", gn: "Guine", gw: "Guine-Bisau",
+      gy: "Guajanë", ht: "Haiti", hn: "Honduras", hu: "Hungari", is: "Islandë",
+      in: "Indi", id: "Indonezi", ir: "Iran", iq: "Irak", ie: "Irlandë",
+      il: "Izrael", it: "Itali", jm: "Xhamajkë", jp: "Japoni", jo: "Jordani",
+      kz: "Kazakistan", ke: "Kenia", ki: "Kiribati", kp: "Koreja e Veriut", kr: "Koreja e Jugut",
+      xk: "Kosovë", kw: "Kuvajt", kg: "Kirgistan", la: "Laos", lv: "Letoni",
+      lb: "Liban", ls: "Lesoto", lr: "Liberi", ly: "Libi", li: "Lihtenshtajn",
+      lt: "Lituani", lu: "Luksemburg", mg: "Madagaskar", mw: "Malavi", my: "Malajzi",
+      mv: "Maldive", ml: "Mali", mt: "Maltë", mh: "Ishujt Marshall", mr: "Mauritani",
+      mu: "Mauritius", mx: "Meksikë", fm: "Mikronezia", md: "Moldavi", mc: "Monako",
+      mn: "Mongoli", me: "Mali i Zi", ma: "Marok", mz: "Mozambik", mm: "Mianmar",
+      na: "Namibi", nr: "Nauru", np: "Nepal", nl: "Holandë", nz: "Zelanda e Re",
+      ni: "Nikaragua", ne: "Nigjer", ng: "Nigeri", mk: "Maqedoni e Veriut", no: "Norvegji",
+      om: "Oman", pk: "Pakistan", pw: "Palau", ps: "Palestinë", pa: "Panama",
+      pg: "Papua Guineja e Re", py: "Paraguaj", pe: "Peru", ph: "Filipine", pl: "Poloni",
+      pt: "Portugali", qa: "Katar", ro: "Rumani", ru: "Rusi", rw: "Ruandë",
+      kn: "Saint Kitts e Nevis", lc: "Shën Luçia", vc: "Shën Vincent e Grenadine", ws: "Samoa", sm: "San Marino",
+      st: "São Tomé e Príncipe", sa: "Arabia Saudite", sn: "Senegal", rs: "Serbi", sc: "Sejshelle",
+      sl: "Sierra Leone", sg: "Singapor", sk: "Sllovaki", si: "Slloveni", sb: "Ishujt Solomon",
+      so: "Somali", za: "Afrika e Jugut", ss: "Sudani i Jugut", es: "Spanjë", lk: "Sri Lankë",
+      sd: "Sudan", sr: "Surinam", se: "Suedi", ch: "Zvicër", sy: "Siri",
+      tw: "Tajvan", tj: "Taxhikistan", tz: "Tanzani", th: "Tajlandë", tl: "Timor Lindor",
+      tg: "Togo", to: "Tonga", tt: "Trinidad e Tobago", tn: "Tunizi", tr: "Turqi",
+      tm: "Turkmenistan", tv: "Tuvalu", ug: "Ugandë", ua: "Ukrainë", ae: "Emiratet e Bashkuara Arabe",
+      gb: "Mbretëria e Bashkuar", us: "Shtetet e Bashkuara", uy: "Uruguaj", uz: "Uzbekistan", vu: "Vanuatu",
+      va: "Vatikan", ve: "Venezuelë", vn: "Vietnam", ye: "Jemen", zm: "Zambia", zw: "Zimbabve",
     };
-    return countries[code] || code;
+    return countryNames[code] || code;
   };
 
   return (
@@ -103,13 +136,9 @@ const Index = () => {
           <aside className="lg:w-64 shrink-0">
             <Filters
               selectedCategory={selectedCategory}
-              selectedLocation={selectedLocation}
-              selectedCountry={selectedCountry}
               onCategoryChange={setSelectedCategory}
-              onLocationChange={setSelectedLocation}
               onReset={() => {
                 setSelectedCategory("all");
-                setSelectedLocation("all");
                 setSearchQuery("");
               }}
             />
