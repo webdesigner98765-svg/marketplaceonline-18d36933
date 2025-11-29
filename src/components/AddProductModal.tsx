@@ -36,30 +36,17 @@ const categories = [
   "Tjetër",
 ];
 
-const locationsByCountry: { [key: string]: string[] } = {
-  al: ["Tiranë", "Durrës", "Vlorë", "Shkodër", "Elbasan", "Korçë", "Fier", "Berat"],
-  xk: ["Prishtinë", "Prizren", "Pejë", "Gjakovë", "Gjilan", "Ferizaj", "Mitrovicë"],
-  mk: ["Shkup", "Tetovë", "Gostivar", "Strugë", "Kumanovë", "Dibër"],
-  me: ["Podgoricë", "Ulqin", "Tuzi", "Plavë", "Rozhajë", "Bar"],
-};
 
 export const AddProductModal = ({ open, onClose }: AddProductModalProps) => {
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
-  const [location, setLocation] = useState("");
-  const [availableLocations, setAvailableLocations] = useState<string[]>([]);
-
-  useEffect(() => {
-    const savedCountry = localStorage.getItem("selectedCountry") || "al";
-    setAvailableLocations(locationsByCountry[savedCountry] || locationsByCountry.al);
-  }, [open]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!title || !price || !description || !category || !location) {
+    if (!title || !price || !description || !category) {
       toast.error("Ju lutemi plotësoni të gjitha fushat");
       return;
     }
@@ -72,7 +59,6 @@ export const AddProductModal = ({ open, onClose }: AddProductModalProps) => {
     setPrice("");
     setDescription("");
     setCategory("");
-    setLocation("");
   };
 
   return (
@@ -124,22 +110,6 @@ export const AddProductModal = ({ open, onClose }: AddProductModalProps) => {
                 </SelectContent>
               </Select>
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="location">Vendndodhja*</Label>
-            <Select value={location} onValueChange={setLocation}>
-              <SelectTrigger id="location">
-                <SelectValue placeholder="Zgjidh qytetin" />
-              </SelectTrigger>
-              <SelectContent>
-                {availableLocations.map((loc) => (
-                  <SelectItem key={loc} value={loc}>
-                    {loc}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
 
           <div className="space-y-2">
