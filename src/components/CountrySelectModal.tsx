@@ -223,9 +223,9 @@ export const CountrySelectModal = ({ open, onSelectCountry }: CountrySelectModal
               <MapPin className="w-8 h-8 text-white" />
             </div>
           </div>
-          <DialogTitle className="text-2xl text-center">Mirë se vini!</DialogTitle>
+          <DialogTitle className="text-2xl text-center">Welcome!</DialogTitle>
           <DialogDescription className="text-center text-base">
-            Zgjidhni shtetin tuaj për të parë produktet e disponueshme në zonën tuaj
+            Select your country to see available products in your area
           </DialogDescription>
         </DialogHeader>
 

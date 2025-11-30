@@ -26,14 +26,14 @@ interface AddProductModalProps {
 }
 
 const categories = [
-  "Elektronikë",
-  "Veshje",
-  "Mobilje",
-  "Automjete",
-  "Shtëpi & Kopësht",
-  "Sport",
-  "Libra",
-  "Tjetër",
+  "Electronics",
+  "Clothing",
+  "Furniture",
+  "Vehicles",
+  "Home & Garden",
+  "Sports",
+  "Books",
+  "Other",
 ];
 
 
@@ -47,11 +47,11 @@ export const AddProductModal = ({ open, onClose }: AddProductModalProps) => {
     e.preventDefault();
     
     if (!title || !price || !description || !category) {
-      toast.error("Ju lutemi plotësoni të gjitha fushat");
+      toast.error("Please fill in all fields");
       return;
     }
 
-    toast.success("Produkti u postua me sukses!");
+    toast.success("Product posted successfully!");
     onClose();
     
     // Reset form
@@ -65,18 +65,18 @@ export const AddProductModal = ({ open, onClose }: AddProductModalProps) => {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl">Posto Produkt të Ri</DialogTitle>
+          <DialogTitle className="text-2xl">Post New Product</DialogTitle>
           <DialogDescription>
-            Plotëso të dhënat e produktit për ta publikuar menjëherë
+            Fill in the product details to publish immediately
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6 pt-4">
           <div className="space-y-2">
-            <Label htmlFor="title">Titulli i Produktit*</Label>
+            <Label htmlFor="title">Product Title*</Label>
             <Input
               id="title"
-              placeholder="p.sh. iPhone 14 Pro në gjendje të shkëlqyer"
+              placeholder="e.g. iPhone 14 Pro in excellent condition"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
@@ -84,7 +84,7 @@ export const AddProductModal = ({ open, onClose }: AddProductModalProps) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="price">Çmimi (€)*</Label>
+              <Label htmlFor="price">Price (€)*</Label>
               <Input
                 id="price"
                 type="number"
@@ -96,10 +96,10 @@ export const AddProductModal = ({ open, onClose }: AddProductModalProps) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="category">Kategoria*</Label>
+              <Label htmlFor="category">Category*</Label>
               <Select value={category} onValueChange={setCategory}>
                 <SelectTrigger id="category">
-                  <SelectValue placeholder="Zgjidh kategorinë" />
+                  <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((cat) => (
@@ -113,10 +113,10 @@ export const AddProductModal = ({ open, onClose }: AddProductModalProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Përshkrimi*</Label>
+            <Label htmlFor="description">Description*</Label>
             <Textarea
               id="description"
-              placeholder="Përshkruaj produktin tënd..."
+              placeholder="Describe your product..."
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -124,21 +124,21 @@ export const AddProductModal = ({ open, onClose }: AddProductModalProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label>Foto e Produktit</Label>
+            <Label>Product Photo</Label>
             <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-smooth cursor-pointer">
               <Upload className="w-12 h-12 mx-auto mb-2 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">
-                Kliko për të ngarkuar foto (opsionale)
+                Click to upload photo (optional)
               </p>
             </div>
           </div>
 
           <div className="flex gap-3 pt-4">
             <Button type="button" variant="outline" onClick={onClose} className="flex-1">
-              Anulo
+              Cancel
             </Button>
             <Button type="submit" variant="accent" className="flex-1">
-              Publiko Produktin
+              Publish Product
             </Button>
           </div>
         </form>

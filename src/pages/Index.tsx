@@ -108,21 +108,21 @@ const Index = () => {
           <div className="max-w-3xl space-y-8 animate-fade-in">
             <div className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full border border-accent/20">
               <Sparkles className="w-4 h-4" />
-              <span className="font-semibold text-sm">Pa regjistrim, pa pritje</span>
+              <span className="font-semibold text-sm">No registration, no waiting</span>
             </div>
             <h2 className="text-6xl md:text-7xl font-display font-bold leading-tight tracking-tight">
-              Reklamoni dhe Blini{" "}
+              Advertise and Buy{" "}
               <span className="bg-gradient-primary bg-clip-text text-transparent">
-                Produkte
+                Products
               </span>
             </h2>
             <p className="text-xl md:text-2xl text-muted-foreground font-medium leading-relaxed">
-              Mijëra produkte nga njerëz të vërtetë. Posto shpejt, bej pazare lehtë.
+              Thousands of products from real people. Post quickly, shop easily.
             </p>
             {selectedCountry && (
               <div className="inline-flex items-center gap-2 text-sm text-muted-foreground bg-card/50 px-4 py-2 rounded-full border border-border/50">
                 <Package className="w-4 h-4" />
-                <span>Produkte nga {getCountryName(selectedCountry)}</span>
+                <span>Products from {getCountryName(selectedCountry)}</span>
               </div>
             )}
           </div>
@@ -148,7 +148,7 @@ const Index = () => {
           <div className="flex-1">
             <div className="mb-8 flex items-center justify-between">
               <h3 className="text-3xl font-display font-bold">
-                {filteredProducts.length} produkte të gjetura
+                {filteredProducts.length} products found
               </h3>
               <Button
                 variant="ghost"
@@ -156,7 +156,7 @@ const Index = () => {
                 onClick={() => setShowCountryModal(true)}
                 className="text-muted-foreground"
               >
-                Ndrysho shtetin
+                Change country
               </Button>
             </div>
 
@@ -165,12 +165,12 @@ const Index = () => {
                 <div className="inline-flex p-6 rounded-full bg-primary/10 mb-6">
                   <Package className="w-16 h-16 text-primary" />
                 </div>
-                <h4 className="text-2xl font-display font-bold mb-3">Nuk ka produkte akoma</h4>
+                <h4 className="text-2xl font-display font-bold mb-3">No products yet</h4>
                 <p className="text-lg text-muted-foreground mb-8 max-w-md mx-auto">
-                  Ji i pari që posto një produkt në {selectedCountry && getCountryName(selectedCountry)}!
+                  Be the first to post a product in {selectedCountry && getCountryName(selectedCountry)}!
                 </p>
                 <Button onClick={() => setShowAddModal(true)} variant="accent" size="lg" className="h-12 px-8 rounded-xl shadow-lg hover:shadow-xl">
-                  Posto Produktin e Parë
+                  Post First Product
                 </Button>
               </div>
             ) : (
