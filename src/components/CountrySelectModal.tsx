@@ -7,7 +7,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { MapPin } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { MapPin, Search } from "lucide-react";
 
 interface CountrySelectModalProps {
   open: boolean;
@@ -214,35 +215,56 @@ const countries = [
 ];
 
 export const CountrySelectModal = ({ open, onSelectCountry }: CountrySelectModalProps) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  
+  const filteredCountries = countries.filter(country =>
+    country.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <Dialog open={open} onOpenChange={() => {}}>
-      <DialogContent className="max-w-md [&>button]:hidden">
-        <DialogHeader>
-          <div className="flex items-center justify-center mb-4">
-            <div className="w-16 h-16 rounded-full bg-gradient-primary flex items-center justify-center">
-              <MapPin className="w-8 h-8 text-white" />
-            </div>
+      <DialogContent className="max-w-lg p-0 overflow-hidden rounded-3xl [&>button]:hidden">
+        <div className="bg-gradient-primary p-8 text-center">
+          <div className="inline-flex p-4 rounded-2xl bg-primary-foreground/20 backdrop-blur-sm mb-4">
+            <MapPin className="w-8 h-8 text-primary-foreground" />
           </div>
-          <DialogTitle className="text-2xl text-center">Welcome!</DialogTitle>
-          <DialogDescription className="text-center text-base">
-            Select your country to see available products in your area
-          </DialogDescription>
-        </DialogHeader>
+          <DialogHeader>
+            <DialogTitle className="text-3xl text-primary-foreground font-display">Welcome!</DialogTitle>
+            <DialogDescription className="text-primary-foreground/80 text-base mt-2">
+              Select your country to see available products
+            </DialogDescription>
+          </DialogHeader>
+        </div>
 
-        <div className="max-h-[60vh] overflow-y-auto px-1">
-          <div className="grid grid-cols-2 gap-3 pt-4">
-            {countries.map((country) => (
-              <Button
-                key={country.code}
-                variant="outline"
-                size="lg"
-                onClick={() => onSelectCountry(country.code)}
-                className="h-auto py-4 flex flex-col gap-2 hover:border-primary hover:bg-primary/5 transition-smooth"
-              >
-                <span className="text-3xl">{country.flag}</span>
-                <span className="font-semibold text-sm text-center leading-tight">{country.name}</span>
-              </Button>
-            ))}
+        <div className="p-6 space-y-4">
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search countries..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-12 h-12 bg-secondary/50 border-0 rounded-xl"
+            />
+          </div>
+
+          {/* Countries grid */}
+          <div className="max-h-[45vh] overflow-y-auto pr-2 -mr-2">
+            <div className="grid grid-cols-2 gap-2">
+              {filteredCountries.map((country) => (
+                <button
+                  key={country.code}
+                  onClick={() => onSelectCountry(country.code)}
+                  className="flex items-center gap-3 p-4 rounded-xl text-left hover:bg-secondary/80 transition-all group"
+                >
+                  <span className="text-2xl">{country.flag}</span>
+                  <span className="font-medium text-sm truncate group-hover:text-primary transition-colors">
+                    {country.name}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </DialogContent>

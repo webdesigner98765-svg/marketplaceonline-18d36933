@@ -1,59 +1,63 @@
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { RotateCcw, Grid3X3, Smartphone, Shirt, Home, Car, Palette, Music, Dumbbell, BookOpen, Sparkles } from "lucide-react";
 
 interface FiltersProps {
   selectedCategory: string;
-  onCategoryChange: (value: string) => void;
+  onCategoryChange: (category: string) => void;
   onReset: () => void;
 }
 
 const categories = [
-  { value: "all", label: "All" },
-  { value: "electronics", label: "Electronics" },
-  { value: "clothing", label: "Clothing" },
-  { value: "furniture", label: "Furniture" },
-  { value: "vehicles", label: "Vehicles" },
-  { value: "home", label: "Home & Garden" },
+  { id: "all", name: "All Categories", icon: Grid3X3 },
+  { id: "electronics", name: "Electronics", icon: Smartphone },
+  { id: "clothing", name: "Clothing", icon: Shirt },
+  { id: "home", name: "Home & Garden", icon: Home },
+  { id: "furniture", name: "Furniture", icon: Home },
+  { id: "vehicles", name: "Vehicles", icon: Car },
+  { id: "art", name: "Art & Crafts", icon: Palette },
+  { id: "music", name: "Music", icon: Music },
+  { id: "sports", name: "Sports", icon: Dumbbell },
+  { id: "books", name: "Books", icon: BookOpen },
+  { id: "other", name: "Other", icon: Sparkles },
 ];
 
-
-export const Filters = ({
-  selectedCategory,
-  onCategoryChange,
-  onReset,
-}: FiltersProps) => {
+export const Filters = ({ selectedCategory, onCategoryChange, onReset }: FiltersProps) => {
   return (
-    <div className="bg-gradient-to-br from-card to-card/50 border border-border/50 rounded-2xl p-6 shadow-card sticky top-24">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="font-display font-bold text-xl">Filter</h3>
-        <Button variant="ghost" size="sm" onClick={onReset} className="hover:bg-primary/10">
-          Clear
+    <div className="glass rounded-2xl p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <h3 className="font-display font-semibold text-lg">Filters</h3>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={onReset}
+          className="text-muted-foreground hover:text-foreground h-9 px-3"
+        >
+          <RotateCcw className="w-4 h-4 mr-2" />
+          Reset
         </Button>
       </div>
-
-      <div className="space-y-6">
-        <div className="space-y-3">
-          <label className="text-sm font-semibold text-foreground/80">Category</label>
-          <Select value={selectedCategory} onValueChange={onCategoryChange}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select category" />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map((cat) => (
-                <SelectItem key={cat.value} value={cat.value}>
-                  {cat.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-muted-foreground mb-3">Categories</p>
+        <div className="space-y-1.5">
+          {categories.map((category) => {
+            const isSelected = selectedCategory === category.id;
+            return (
+              <button
+                key={category.id}
+                onClick={() => onCategoryChange(category.id)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${
+                  isSelected
+                    ? "bg-gradient-primary text-primary-foreground shadow-button"
+                    : "hover:bg-secondary/80 text-foreground"
+                }`}
+              >
+                <category.icon className={`w-5 h-5 ${isSelected ? "text-primary-foreground" : "text-muted-foreground"}`} />
+                <span className="font-medium">{category.name}</span>
+              </button>
+            );
+          })}
         </div>
-
       </div>
     </div>
   );
