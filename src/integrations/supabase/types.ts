@@ -14,13 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      products: {
+        Row: {
+          category: string
+          country: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          price: number
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          country?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          price: number
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          country?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          price?: number
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_product_owner: { Args: { product_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
