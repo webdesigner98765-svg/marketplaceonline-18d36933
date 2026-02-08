@@ -55,6 +55,11 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
       return;
     }
 
+    if (price.trim().length > 100) {
+      toast.error("Çmimi nuk mund të jetë më i gjatë se 100 karaktere");
+      return;
+    }
+
     if (!user) {
       toast.error("Duhet të hysh për të postuar");
       return;
@@ -63,9 +68,9 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
     setSubmitting(true);
     try {
       const { error } = await supabase.from("products").insert({
-        title,
-        price: parseFloat(price),
-        description,
+        title: title.trim(),
+        price: price.trim(),
+        description: description.trim(),
         category: category.toLowerCase(),
         country: country || undefined,
         user_id: user.id,
@@ -110,14 +115,14 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="price">Çmimi (€)*</Label>
+              <Label htmlFor="price">Çmimi*</Label>
               <Input
                 id="price"
-                type="number"
-                step="0.01"
-                placeholder="0.00"
+                type="text"
+                placeholder="p.sh. 50€, Falas, Me marrëveshje"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
+                maxLength={100}
               />
             </div>
 

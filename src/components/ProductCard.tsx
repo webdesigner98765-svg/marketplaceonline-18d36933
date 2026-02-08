@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 interface ProductCardProps {
   id: string;
   title: string;
-  price: number;
+  price: string;
   image: string;
   location: string;
   category: string;
@@ -70,7 +70,7 @@ export const ProductCard = ({
           </div>
           
           <div className="text-2xl font-display font-bold text-gradient">
-            €{price.toFixed(2)}
+            {price}
           </div>
         </div>
       </CardContent>
