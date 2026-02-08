@@ -1,4 +1,4 @@
-import { Search, Plus, Sparkles, LogOut } from "lucide-react";
+import { Search, Plus, Sparkles, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface HeaderProps {
@@ -18,6 +19,7 @@ interface HeaderProps {
 
 export const Header = ({ onAddProduct, searchQuery, onSearchChange }: HeaderProps) => {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const userEmail = user?.email || "";
   const initials = userEmail
@@ -67,6 +69,16 @@ export const Header = ({ onAddProduct, searchQuery, onSearchChange }: HeaderProp
             <Plus className="w-5 h-5" />
           </Button>
 
+          {/* Settings */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/settings")}
+            className="w-10 h-10 rounded-xl text-muted-foreground hover:text-foreground"
+          >
+            <Settings className="w-5 h-5" />
+          </Button>
+
           {/* User Avatar / Auth */}
           {user ? (
             <DropdownMenu>
@@ -81,8 +93,11 @@ export const Header = ({ onAddProduct, searchQuery, onSearchChange }: HeaderProp
               <DropdownMenuContent align="end" className="w-48">
                 <div className="px-3 py-2 border-b border-border">
                   <p className="font-medium text-sm truncate">{userEmail}</p>
-                  
                 </div>
+                <DropdownMenuItem onClick={() => navigate("/settings")} className="gap-2 cursor-pointer">
+                  <Settings className="w-4 h-4" />
+                  Cilësimet
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={signOut} className="gap-2 text-destructive cursor-pointer">
                   <LogOut className="w-4 h-4" />
                   Dil

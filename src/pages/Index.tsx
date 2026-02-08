@@ -135,7 +135,7 @@ const Index = () => {
                 size="lg" 
                 className="h-14 px-8 text-base font-semibold bg-gradient-primary hover:opacity-90 shadow-button rounded-2xl group"
               >
-                Fillo Shitjen
+                Reklamo Produktin Tënd
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
               <Button 
