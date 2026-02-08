@@ -19,10 +19,9 @@ interface HeaderProps {
 export const Header = ({ onAddProduct, searchQuery, onSearchChange }: HeaderProps) => {
   const { user, signOut } = useAuth();
 
-  const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
-  const fullName = user?.user_metadata?.full_name || user?.user_metadata?.name || "";
-  const initials = fullName
-    ? fullName.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)
+  const userEmail = user?.email || "";
+  const initials = userEmail
+    ? userEmail.substring(0, 2).toUpperCase()
     : "?";
 
   return (
@@ -74,15 +73,15 @@ export const Header = ({ onAddProduct, searchQuery, onSearchChange }: HeaderProp
               <DropdownMenuTrigger asChild>
                 <button className="rounded-full ring-2 ring-border hover:ring-primary transition-all">
                   <Avatar className="w-10 h-10">
-                    <AvatarImage src={avatarUrl} alt={fullName} />
+                    <AvatarImage src={user?.user_metadata?.avatar_url} alt={userEmail} />
                     <AvatarFallback className="bg-secondary text-sm font-semibold">{initials}</AvatarFallback>
                   </Avatar>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <div className="px-3 py-2 border-b border-border">
-                  <p className="font-medium text-sm truncate">{fullName}</p>
-                  <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                  <p className="font-medium text-sm truncate">{userEmail}</p>
+                  
                 </div>
                 <DropdownMenuItem onClick={signOut} className="gap-2 text-destructive cursor-pointer">
                   <LogOut className="w-4 h-4" />
