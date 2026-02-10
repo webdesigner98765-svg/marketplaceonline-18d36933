@@ -28,14 +28,10 @@ const Index = () => {
   // Fetch products from database
   useEffect(() => {
     const fetchProducts = async () => {
-      let query = supabase
+      const query = supabase
         .from("products")
-        .select("*, profiles(full_name, avatar_url)")
+        .select("*")
         .order("created_at", { ascending: false });
-
-      if (selectedCountry) {
-        query = query.eq("country", selectedCountry);
-      }
 
       const { data, error } = await query;
       if (!error && data) {
