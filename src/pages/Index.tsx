@@ -81,7 +81,6 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <div className="fixed inset-0 mesh-gradient opacity-60 pointer-events-none" />
       
-      <CountrySelectModal open={showCountryModal} onSelectCountry={handleCountrySelect} />
       <AuthPromptModal open={showAuthPrompt} onClose={() => setShowAuthPrompt(false)} />
 
       <Header
