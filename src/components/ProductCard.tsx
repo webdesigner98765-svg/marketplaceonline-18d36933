@@ -1,6 +1,10 @@
-import { Star, MapPin } from "lucide-react";
+import { Star, MapPin, Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   id: string;
@@ -11,10 +15,12 @@ interface ProductCardProps {
   category: string;
   rating: number;
   reviewCount: number;
+  userId?: string;
   onClick: () => void;
 }
 
 export const ProductCard = ({
+  id,
   title,
   price,
   image,
@@ -22,8 +28,24 @@ export const ProductCard = ({
   category,
   rating,
   reviewCount,
+  userId,
   onClick,
 }: ProductCardProps) => {
+  const { user } = useAuth();
+  const isOwner = user && userId && user.id === userId;
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm("Je i sigurt që dëshiron ta fshish këtë produkt?")) return;
+
+    const { error } = await supabase.from("products").delete().eq("id", id);
+    if (error) {
+      toast.error("Gabim gjatë fshirjes");
+    } else {
+      toast.success("Produkti u fshi me sukses");
+    }
+  };
+
   return (
     <Card 
       className="group cursor-pointer overflow-hidden hover-lift glass border-border/30 rounded-2xl"
@@ -41,6 +63,16 @@ export const ProductCard = ({
         >
           {category}
         </Badge>
+        {isOwner && (
+          <Button
+            size="icon"
+            variant="destructive"
+            className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
+            onClick={handleDelete}
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        )}
       </div>
       
       <CardContent className="p-5 space-y-4">
