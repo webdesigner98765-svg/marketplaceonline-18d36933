@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { countries, getCountryByCode } from "@/data/countries";
 import { useAuth } from "@/contexts/AuthContext";
-import { ArrowLeft, Globe, Search, MapPin, LogOut, User, Sparkles } from "lucide-react";
+import { ArrowLeft, LogOut, User, Sparkles } from "lucide-react";
 
 const Settings = () => {
   const navigate = useNavigate();
