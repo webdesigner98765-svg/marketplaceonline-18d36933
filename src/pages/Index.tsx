@@ -197,7 +197,7 @@ const Index = () => {
                       title={product.title}
                       price={product.price}
                       image={product.image_url || "/placeholder.svg"}
-                      location={product.country ? getCountryName(product.country) : ""}
+                      location="Shqipëri"
                       category={product.category}
                       rating={0}
                       reviewCount={0}
