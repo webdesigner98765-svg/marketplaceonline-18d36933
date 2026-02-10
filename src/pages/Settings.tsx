@@ -56,64 +56,6 @@ const Settings = () => {
           </section>
         )}
 
-        {/* Country Section */}
-        <section className="glass rounded-3xl p-8 space-y-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-accent flex items-center justify-center shadow-button">
-              <Globe className="w-7 h-7 text-accent-foreground" />
-            </div>
-            <div>
-              <h2 className="font-display font-bold text-xl">Shteti</h2>
-              <p className="text-muted-foreground text-sm">Zgjidh shtetin për të parë produkte</p>
-            </div>
-          </div>
-
-          {currentCountry && (
-            <div className="flex items-center gap-3 p-4 rounded-2xl bg-primary/10 border border-primary/20">
-              <MapPin className="w-5 h-5 text-primary" />
-              <span className="text-2xl">{currentCountry.flag}</span>
-              <span className="font-semibold">{currentCountry.name}</span>
-              <span className="ml-auto text-xs text-primary font-medium px-3 py-1 rounded-full bg-primary/10">Aktiv</span>
-            </div>
-          )}
-
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Kërko shtetin..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 h-12 bg-secondary/50 border-0 rounded-xl"
-            />
-          </div>
-
-          {/* Countries grid */}
-          <div className="max-h-[50vh] overflow-y-auto pr-2 -mr-2">
-            <div className="grid grid-cols-2 gap-2">
-              {filteredCountries.map((country) => {
-                const isSelected = savedCountry === country.code;
-                return (
-                  <button
-                    key={country.code}
-                    onClick={() => handleCountrySelect(country.code)}
-                    className={`flex items-center gap-3 p-4 rounded-xl text-left transition-all group ${
-                      isSelected
-                        ? "bg-gradient-primary text-primary-foreground shadow-button"
-                        : "hover:bg-secondary/80 text-foreground"
-                    }`}
-                  >
-                    <span className="text-2xl">{country.flag}</span>
-                    <span className={`font-medium text-sm truncate ${isSelected ? "" : "group-hover:text-primary"} transition-colors`}>
-                      {country.name}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </section>
       </main>
     </div>
   );
