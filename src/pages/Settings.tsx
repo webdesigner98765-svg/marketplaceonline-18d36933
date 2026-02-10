@@ -7,19 +7,6 @@ import { ArrowLeft, LogOut, User, Sparkles } from "lucide-react";
 const Settings = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const savedCountry = localStorage.getItem("selectedCountry");
-  const currentCountry = savedCountry ? getCountryByCode(savedCountry) : null;
-
-  const filteredCountries = countries.filter((country) =>
-    country.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const handleCountrySelect = (code: string) => {
-    localStorage.setItem("selectedCountry", code);
-    navigate("/");
-  };
 
   return (
     <div className="min-h-screen bg-background">
