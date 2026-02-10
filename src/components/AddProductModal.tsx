@@ -45,12 +45,13 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
+  const [contact, setContact] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!title || !price || !description || !category) {
+    if (!title || !price || !description || !category || !contact) {
       toast.error("Plotëso të gjitha fushat");
       return;
     }
@@ -72,6 +73,7 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
         price: price.trim(),
         description: description.trim(),
         category: category.toLowerCase(),
+        contact: contact.trim(),
         country: country || undefined,
         user_id: user.id,
       });
@@ -84,6 +86,7 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
       setPrice("");
       setDescription("");
       setCategory("");
+      setContact("");
     } catch (err) {
       console.error("Error posting product:", err);
       toast.error("Ndodhi një gabim. Provo përsëri.");
@@ -151,6 +154,16 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="contact">Kontakti* (telefon ose email)</Label>
+            <Input
+              id="contact"
+              placeholder="p.sh. +355 69 123 4567 ose email@example.com"
+              value={contact}
+              onChange={(e) => setContact(e.target.value)}
             />
           </div>
 
