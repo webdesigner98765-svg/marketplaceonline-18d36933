@@ -167,10 +167,6 @@ const Index = () => {
                 <h2 className="text-3xl font-display font-bold">Zbulo Produkte</h2>
                 <p className="text-muted-foreground mt-1">{filteredProducts.length} produkte të disponueshme</p>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => setShowCountryModal(true)} className="text-muted-foreground hover:text-foreground">
-                <Globe className="w-4 h-4 mr-2" />
-                Ndrysho vendin
-              </Button>
             </div>
 
             {filteredProducts.length === 0 ? (
