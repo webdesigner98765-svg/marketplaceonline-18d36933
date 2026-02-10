@@ -22,7 +22,7 @@ const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [products, setProducts] = useState<any[]>([]);
 
-  const getCountryName = useCountryNames();
+  
 
 
   // Fetch products from database
