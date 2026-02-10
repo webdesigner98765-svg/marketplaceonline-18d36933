@@ -16,8 +16,7 @@ const Index = () => {
   const { user } = useAuth();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
-  const [showCountryModal, setShowCountryModal] = useState(true);
-  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [selectedCountry] = useState<string>("al");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [products, setProducts] = useState<any[]>([]);
