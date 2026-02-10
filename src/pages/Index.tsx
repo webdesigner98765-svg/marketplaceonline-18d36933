@@ -125,12 +125,6 @@ const Index = () => {
               </Button>
             </div>
 
-            {selectedCountry && (
-              <div className="inline-flex items-center gap-2 text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: '0.5s' }}>
-                <Package className="w-4 h-4" />
-                <span>Duke shfaqur produkte nga <span className="font-medium text-foreground">{getCountryName(selectedCountry)}</span></span>
-              </div>
-            )}
           </div>
         </div>
       </section>
