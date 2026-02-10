@@ -123,15 +123,6 @@ const Index = () => {
                 Reklamo Produktin Tënd
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="h-14 px-8 text-base font-semibold glass rounded-2xl"
-                onClick={() => setShowCountryModal(true)}
-              >
-                <Globe className="w-5 h-5 mr-2" />
-                Shfleto Produkte
-              </Button>
             </div>
 
             {selectedCountry && (
