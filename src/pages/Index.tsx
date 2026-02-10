@@ -4,39 +4,26 @@ import { ProductCard } from "@/components/ProductCard";
 import { AddProductModal } from "@/components/AddProductModal";
 import { AuthPromptModal } from "@/components/AuthPromptModal";
 import { Filters } from "@/components/Filters";
-import { CountrySelectModal } from "@/components/CountrySelectModal";
+
 import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/home-interior.jpg";
 import { Sparkles, Package, ArrowRight, Zap, Shield, Globe } from "lucide-react";
+
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useCountryNames } from "@/hooks/useCountryNames";
+
 
 const Index = () => {
   const { user } = useAuth();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
-  const [showCountryModal, setShowCountryModal] = useState(true);
-  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [selectedCountry] = useState<string>("al");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [products, setProducts] = useState<any[]>([]);
 
-  const getCountryName = useCountryNames();
+  
 
-  const handleCountrySelect = (country: string) => {
-    setSelectedCountry(country);
-    setShowCountryModal(false);
-    localStorage.setItem("selectedCountry", country);
-  };
-
-  useEffect(() => {
-    const savedCountry = localStorage.getItem("selectedCountry");
-    if (savedCountry) {
-      setSelectedCountry(savedCountry);
-      setShowCountryModal(false);
-    }
-  }, []);
 
   // Fetch products from database
   useEffect(() => {
@@ -95,7 +82,6 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <div className="fixed inset-0 mesh-gradient opacity-60 pointer-events-none" />
       
-      <CountrySelectModal open={showCountryModal} onSelectCountry={handleCountrySelect} />
       <AuthPromptModal open={showAuthPrompt} onClose={() => setShowAuthPrompt(false)} />
 
       <Header
@@ -138,23 +124,8 @@ const Index = () => {
                 Reklamo Produktin Tënd
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="h-14 px-8 text-base font-semibold glass rounded-2xl"
-                onClick={() => setShowCountryModal(true)}
-              >
-                <Globe className="w-5 h-5 mr-2" />
-                Shfleto Produkte
-              </Button>
             </div>
 
-            {selectedCountry && (
-              <div className="inline-flex items-center gap-2 text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: '0.5s' }}>
-                <Package className="w-4 h-4" />
-                <span>Duke shfaqur produkte nga <span className="font-medium text-foreground">{getCountryName(selectedCountry)}</span></span>
-              </div>
-            )}
           </div>
         </div>
       </section>
@@ -197,10 +168,6 @@ const Index = () => {
                 <h2 className="text-3xl font-display font-bold">Zbulo Produkte</h2>
                 <p className="text-muted-foreground mt-1">{filteredProducts.length} produkte të disponueshme</p>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => setShowCountryModal(true)} className="text-muted-foreground hover:text-foreground">
-                <Globe className="w-4 h-4 mr-2" />
-                Ndrysho vendin
-              </Button>
             </div>
 
             {filteredProducts.length === 0 ? (
@@ -210,7 +177,7 @@ const Index = () => {
                 </div>
                 <h3 className="text-3xl font-display font-bold mb-4">Asnjë produkt akoma</h3>
                 <p className="text-lg text-muted-foreground mb-10 max-w-md mx-auto">
-                  Bëhu i pari që poston një produkt{selectedCountry ? ` në ${getCountryName(selectedCountry)}` : ""}!
+                  Bëhu i pari që poston një produkt!
                 </p>
                 <Button 
                   onClick={handlePostProduct} 
@@ -230,7 +197,7 @@ const Index = () => {
                       title={product.title}
                       price={product.price}
                       image={product.image_url || "/placeholder.svg"}
-                      location={product.country ? getCountryName(product.country) : ""}
+                      location="Shqipëri"
                       category={product.category}
                       rating={0}
                       reviewCount={0}
