@@ -11,7 +11,7 @@ import { Sparkles, Package, ArrowRight, Zap, Shield, Globe } from "lucide-react"
 
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useCountryNames } from "@/hooks/useCountryNames";
+
 
 const Index = () => {
   const { user } = useAuth();
