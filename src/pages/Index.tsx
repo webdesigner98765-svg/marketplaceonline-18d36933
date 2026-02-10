@@ -23,19 +23,6 @@ const Index = () => {
 
   const getCountryName = useCountryNames();
 
-  const handleCountrySelect = (country: string) => {
-    setSelectedCountry(country);
-    setShowCountryModal(false);
-    localStorage.setItem("selectedCountry", country);
-  };
-
-  useEffect(() => {
-    const savedCountry = localStorage.getItem("selectedCountry");
-    if (savedCountry) {
-      setSelectedCountry(savedCountry);
-      setShowCountryModal(false);
-    }
-  }, []);
 
   // Fetch products from database
   useEffect(() => {
