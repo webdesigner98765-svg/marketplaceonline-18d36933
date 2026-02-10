@@ -201,6 +201,7 @@ const Index = () => {
                       category={product.category}
                       rating={0}
                       reviewCount={0}
+                      userId={product.user_id}
                       onClick={() => console.log("Product clicked:", product.id)}
                     />
                   </div>
