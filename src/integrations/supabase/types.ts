@@ -17,6 +17,7 @@ export type Database = {
       products: {
         Row: {
           category: string
+          contact: string | null
           country: string | null
           created_at: string
           description: string | null
@@ -29,6 +30,7 @@ export type Database = {
         }
         Insert: {
           category: string
+          contact?: string | null
           country?: string | null
           created_at?: string
           description?: string | null
@@ -41,6 +43,7 @@ export type Database = {
         }
         Update: {
           category?: string
+          contact?: string | null
           country?: string | null
           created_at?: string
           description?: string | null
