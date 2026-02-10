@@ -4,7 +4,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { AddProductModal } from "@/components/AddProductModal";
 import { AuthPromptModal } from "@/components/AuthPromptModal";
 import { Filters } from "@/components/Filters";
-import { CountrySelectModal } from "@/components/CountrySelectModal";
+
 import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/home-interior.jpg";
 import { Sparkles, Package, ArrowRight, Zap, Shield, Globe } from "lucide-react";
