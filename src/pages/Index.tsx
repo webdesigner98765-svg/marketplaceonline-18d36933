@@ -177,7 +177,7 @@ const Index = () => {
                 </div>
                 <h3 className="text-3xl font-display font-bold mb-4">Asnjë produkt akoma</h3>
                 <p className="text-lg text-muted-foreground mb-10 max-w-md mx-auto">
-                  Bëhu i pari që poston një produkt{selectedCountry ? ` në ${getCountryName(selectedCountry)}` : ""}!
+                  Bëhu i pari që poston një produkt!
                 </p>
                 <Button 
                   onClick={handlePostProduct} 
