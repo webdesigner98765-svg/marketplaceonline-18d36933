@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { ConversationList } from "@/components/chat/ConversationList";
 import { MessageThread } from "@/components/chat/MessageThread";
+import { NewChatSearch } from "@/components/chat/NewChatSearch";
 import { ArrowLeft, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -118,6 +119,10 @@ const Chat = () => {
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar - conversation list */}
         <div className={`w-full md:w-80 border-r border-border/30 flex-shrink-0 ${activeConversationId ? "hidden md:flex" : "flex"} flex-col`}>
+          <NewChatSearch
+            currentUserId={user.id}
+            onConversationCreated={(id) => setActiveConversationId(id)}
+          />
           <ConversationList
             conversations={conversations}
             activeId={activeConversationId}
