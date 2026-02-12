@@ -1,9 +1,10 @@
-import { Star, MapPin, Trash2 } from "lucide-react";
+import { Star, MapPin, Trash2, MessageCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 interface ProductCardProps {
@@ -32,6 +33,7 @@ export const ProductCard = ({
   onClick,
 }: ProductCardProps) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const isOwner = user && userId && user.id === userId;
 
   const handleDelete = async (e: React.MouseEvent) => {
@@ -63,16 +65,31 @@ export const ProductCard = ({
         >
           {category}
         </Badge>
-        {isOwner && (
-          <Button
-            size="icon"
-            variant="destructive"
-            className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
-            onClick={handleDelete}
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        )}
+        <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          {!isOwner && user && userId && (
+            <Button
+              size="icon"
+              variant="secondary"
+              className="rounded-lg glass-strong"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/chat?productId=${id}&sellerId=${userId}`);
+              }}
+            >
+              <MessageCircle className="w-4 h-4" />
+            </Button>
+          )}
+          {isOwner && (
+            <Button
+              size="icon"
+              variant="destructive"
+              className="rounded-lg"
+              onClick={handleDelete}
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
       </div>
       
       <CardContent className="p-5 space-y-4">
