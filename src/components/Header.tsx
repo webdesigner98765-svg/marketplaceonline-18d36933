@@ -1,4 +1,4 @@
-import { Search, Plus, Sparkles, LogOut, Settings } from "lucide-react";
+import { Search, Plus, Sparkles, LogOut, Settings, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -68,6 +68,18 @@ export const Header = ({ onAddProduct, searchQuery, onSearchChange }: HeaderProp
           >
             <Plus className="w-5 h-5" />
           </Button>
+
+          {/* Chat */}
+          {user && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/chat")}
+              className="w-10 h-10 rounded-xl text-muted-foreground hover:text-foreground"
+            >
+              <MessageCircle className="w-5 h-5" />
+            </Button>
+          )}
 
           {/* Settings */}
           <Button
