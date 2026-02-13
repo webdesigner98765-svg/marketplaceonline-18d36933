@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Upload } from "lucide-react";
+import { useState, useRef } from "react";
+import { Upload, X, Image, Video } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +21,7 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { Progress } from "@/components/ui/progress";
 
 interface AddProductModalProps {
   open: boolean;
@@ -39,6 +40,9 @@ const categories = [
   "Other",
 ];
 
+const ACCEPTED_TYPES = "image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime";
+const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+
 export const AddProductModal = ({ open, onClose, country }: AddProductModalProps) => {
   const { user } = useAuth();
   const [title, setTitle] = useState("");
@@ -47,12 +51,44 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
   const [category, setCategory] = useState("");
   const [contact, setContact] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (!selected) return;
+
+    if (selected.size > MAX_FILE_SIZE) {
+      toast.error("Skedari është shumë i madh (max 20MB)");
+      return;
+    }
+
+    setFile(selected);
+    const url = URL.createObjectURL(selected);
+    setPreview(url);
+  };
+
+  const removeFile = () => {
+    setFile(null);
+    if (preview) URL.revokeObjectURL(preview);
+    setPreview(null);
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
+  const isVideo = file?.type.startsWith("video/");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!title || !price || !description || !category || !contact) {
       toast.error("Plotëso të gjitha fushat");
+      return;
+    }
+
+    if (!file) {
+      toast.error("Duhet të ngarkosh një foto ose video");
       return;
     }
 
@@ -67,7 +103,29 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
     }
 
     setSubmitting(true);
+    setUploadProgress(10);
+
     try {
+      // Upload file
+      const ext = file.name.split(".").pop();
+      const filePath = `${user.id}/${crypto.randomUUID()}.${ext}`;
+
+      setUploadProgress(30);
+
+      const { error: uploadError } = await supabase.storage
+        .from("product-media")
+        .upload(filePath, file, { contentType: file.type });
+
+      if (uploadError) throw uploadError;
+
+      setUploadProgress(70);
+
+      const { data: urlData } = supabase.storage
+        .from("product-media")
+        .getPublicUrl(filePath);
+
+      const imageUrl = urlData.publicUrl;
+
       const { error } = await supabase.from("products").insert({
         title: title.trim(),
         price: price.trim(),
@@ -76,10 +134,12 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
         contact: contact.trim(),
         country: country || undefined,
         user_id: user.id,
+        image_url: imageUrl,
       });
 
       if (error) throw error;
 
+      setUploadProgress(100);
       toast.success("Produkti u postua me sukses!");
       onClose();
       setTitle("");
@@ -87,6 +147,8 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
       setDescription("");
       setCategory("");
       setContact("");
+      removeFile();
+      setUploadProgress(0);
     } catch (err) {
       console.error("Error posting product:", err);
       toast.error("Ndodhi një gabim. Provo përsëri.");
@@ -167,22 +229,73 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
             />
           </div>
 
+          {/* File Upload - Required */}
           <div className="space-y-2">
-            <Label>Foto e Produktit</Label>
-            <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-smooth cursor-pointer">
-              <Upload className="w-12 h-12 mx-auto mb-2 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">
-                Kliko për të ngarkuar foto (opsionale)
-              </p>
-            </div>
+            <Label>Foto ose Video e Produktit* <span className="text-destructive">(e detyrueshme)</span></Label>
+
+            {!file ? (
+              <div
+                onClick={() => fileRef.current?.click()}
+                className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-smooth cursor-pointer"
+              >
+                <div className="flex justify-center gap-3 mb-2">
+                  <Image className="w-8 h-8 text-muted-foreground" />
+                  <Video className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Kliko për të ngarkuar foto ose video
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  JPG, PNG, WebP, GIF, MP4, WebM (max 20MB)
+                </p>
+              </div>
+            ) : (
+              <div className="relative border border-border rounded-lg overflow-hidden">
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  className="absolute top-2 right-2 z-10 h-7 w-7 rounded-full"
+                  onClick={removeFile}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+
+                {isVideo ? (
+                  <video
+                    src={preview!}
+                    controls
+                    className="w-full max-h-64 object-contain bg-secondary/30"
+                  />
+                ) : (
+                  <img
+                    src={preview!}
+                    alt="Preview"
+                    className="w-full max-h-64 object-contain bg-secondary/30"
+                  />
+                )}
+              </div>
+            )}
+
+            <input
+              ref={fileRef}
+              type="file"
+              accept={ACCEPTED_TYPES}
+              onChange={handleFileChange}
+              className="hidden"
+            />
           </div>
+
+          {submitting && uploadProgress > 0 && (
+            <Progress value={uploadProgress} className="h-2" />
+          )}
 
           <div className="flex gap-3 pt-4">
             <Button type="button" variant="outline" onClick={onClose} className="flex-1">
               Anulo
             </Button>
             <Button type="submit" variant="accent" className="flex-1" disabled={submitting}>
-              {submitting ? "Duke postuar..." : "Publiko Produktin"}
+              {submitting ? "Duke ngarkuar..." : "Publiko Produktin"}
             </Button>
           </div>
         </form>
