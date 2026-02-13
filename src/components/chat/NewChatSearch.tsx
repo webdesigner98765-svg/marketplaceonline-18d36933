@@ -27,7 +27,6 @@ export const NewChatSearch = ({ currentUserId, onConversationCreated }: NewChatS
     const { data } = await supabase
       .from("products")
       .select("id, title, price, image_url, user_id, category")
-      .neq("user_id", currentUserId)
       .ilike("title", `%${value.trim()}%`)
       .limit(10);
 
@@ -36,7 +35,7 @@ export const NewChatSearch = ({ currentUserId, onConversationCreated }: NewChatS
   };
 
   const handleSelect = async (product: any) => {
-    // Check existing conversation
+    if (product.user_id === currentUserId) return; // Can't chat with yourself
     const { data: existing } = await supabase
       .from("conversations")
       .select("id")
