@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ProductCardProps {
   id: string;
@@ -34,6 +35,7 @@ export const ProductCard = ({
 }: ProductCardProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const isOwner = user && userId && user.id === userId;
 
   const handleDelete = async (e: React.MouseEvent) => {
@@ -45,6 +47,7 @@ export const ProductCard = ({
       toast.error("Gabim gjatë fshirjes");
     } else {
       toast.success("Produkti u fshi me sukses");
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     }
   };
 

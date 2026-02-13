@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Header } from "@/components/Header";
 import { ProductCard } from "@/components/ProductCard";
 import { AddProductModal } from "@/components/AddProductModal";
@@ -10,7 +10,7 @@ import heroImage from "@/assets/home-interior.jpg";
 import { Sparkles, Package, ArrowRight, Zap, Shield, Globe } from "lucide-react";
 
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
+import { useProducts } from "@/hooks/useProducts";
 
 
 const Index = () => {
@@ -20,39 +20,7 @@ const Index = () => {
   const [selectedCountry] = useState<string>("al");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [products, setProducts] = useState<any[]>([]);
-
-  
-
-
-  // Fetch products from database
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const query = supabase
-        .from("products")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      const { data, error } = await query;
-      if (!error && data) {
-        setProducts(data);
-      }
-    };
-
-    fetchProducts();
-
-    // Realtime subscription
-    const channel = supabase
-      .channel("products-realtime")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "products" },
-        () => fetchProducts()
-      )
-      .subscribe();
-
-    return () => { supabase.removeChannel(channel); };
-  }, [selectedCountry]);
+  const { data: products = [] } = useProducts();
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase());

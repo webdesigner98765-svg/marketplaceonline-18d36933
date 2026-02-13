@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { Upload, X, Image, Video } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Dialog,
   DialogContent,
@@ -45,6 +46,7 @@ const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 
 export const AddProductModal = ({ open, onClose, country }: AddProductModalProps) => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
@@ -141,6 +143,7 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
 
       setUploadProgress(100);
       toast.success("Produkti u postua me sukses!");
+      queryClient.invalidateQueries({ queryKey: ["products"] });
       onClose();
       setTitle("");
       setPrice("");
