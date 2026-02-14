@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { ProductCard } from "@/components/ProductCard";
 import { AddProductModal } from "@/components/AddProductModal";
@@ -10,11 +11,15 @@ import heroImage from "@/assets/home-interior.jpg";
 import { Sparkles, Package, ArrowRight, Zap, Shield, Globe } from "lucide-react";
 
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useProducts } from "@/hooks/useProducts";
+import { toast } from "sonner";
 
 
 const Index = () => {
   const { user } = useAuth();
+  const { subscribed } = useSubscription();
+  const navigate = useNavigate();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const [selectedCountry] = useState<string>("al");
@@ -31,6 +36,9 @@ const Index = () => {
   const handlePostProduct = () => {
     if (!user) {
       setShowAuthPrompt(true);
+    } else if (!subscribed) {
+      toast.info("Duhet një abonim aktiv për të postuar produkte");
+      navigate("/pricing");
     } else {
       setShowAddModal(true);
     }
