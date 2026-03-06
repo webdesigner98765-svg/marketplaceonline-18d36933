@@ -40,13 +40,13 @@ export const ProductCard = ({
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm("Je i sigurt që dëshiron ta fshish këtë produkt?")) return;
+    if (!confirm("Are you sure you want to delete this product?")) return;
 
     const { error } = await supabase.from("products").delete().eq("id", id);
     if (error) {
-      toast.error("Gabim gjatë fshirjes");
+      toast.error("Error deleting product");
     } else {
-      toast.success("Produkti u fshi me sukses");
+      toast.success("Product deleted successfully");
       queryClient.invalidateQueries({ queryKey: ["products"] });
     }
   };

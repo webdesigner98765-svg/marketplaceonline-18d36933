@@ -1,7 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
-import { sq } from "date-fns/locale/sq";
 
 interface ConversationListProps {
   conversations: any[];
@@ -14,7 +13,7 @@ export const ConversationList = ({ conversations, activeId, currentUserId, onSel
   if (conversations.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center p-6 text-center text-muted-foreground">
-        <p>Asnjë bisedë akoma</p>
+        <p>No conversations yet</p>
       </div>
     );
   }
@@ -24,9 +23,9 @@ export const ConversationList = ({ conversations, activeId, currentUserId, onSel
       {conversations.map((conv) => {
         const isBuyer = currentUserId === conv.buyer_id;
         const otherUser = isBuyer ? conv.seller : conv.buyer;
-        const otherName = otherUser?.full_name || otherUser?.email || "Përdorues";
+        const otherName = otherUser?.full_name || otherUser?.email || "User";
         const initials = otherName.substring(0, 2).toUpperCase();
-        const productTitle = conv.products?.title || "Produkt";
+        const productTitle = conv.products?.title || "Product";
 
         return (
           <button
@@ -45,7 +44,7 @@ export const ConversationList = ({ conversations, activeId, currentUserId, onSel
               <p className="text-xs text-muted-foreground truncate">{productTitle}</p>
             </div>
             <span className="text-xs text-muted-foreground flex-shrink-0">
-              {formatDistanceToNow(new Date(conv.updated_at), { addSuffix: false, locale: sq })}
+              {formatDistanceToNow(new Date(conv.updated_at), { addSuffix: false })}
             </span>
           </button>
         );

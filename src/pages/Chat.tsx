@@ -18,13 +18,11 @@ const Chat = () => {
   const productId = searchParams.get("productId");
   const sellerId = searchParams.get("sellerId");
 
-  // Create or find existing conversation when coming from a product
   useEffect(() => {
     if (!user || !productId || !sellerId) return;
-    if (user.id === sellerId) return; // Can't chat with yourself
+    if (user.id === sellerId) return;
 
     const findOrCreate = async () => {
-      // Check existing
       const { data: existing } = await supabase
         .from("conversations")
         .select("id")
@@ -37,7 +35,6 @@ const Chat = () => {
         return;
       }
 
-      // Create new
       const { data: created, error } = await supabase
         .from("conversations")
         .insert({ product_id: productId, buyer_id: user.id, seller_id: sellerId })
@@ -52,7 +49,6 @@ const Chat = () => {
     findOrCreate();
   }, [user, productId, sellerId]);
 
-  // Fetch conversations
   useEffect(() => {
     if (!user) return;
 
@@ -98,8 +94,8 @@ const Chat = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <MessageCircle className="w-16 h-16 text-muted-foreground mx-auto" />
-          <h2 className="text-2xl font-display font-bold">Identifikohu për të përdorur chat-in</h2>
-          <Button onClick={() => navigate("/")} variant="outline">Kthehu</Button>
+          <h2 className="text-2xl font-display font-bold">Sign in to use chat</h2>
+          <Button onClick={() => navigate("/")} variant="outline">Go Back</Button>
         </div>
       </div>
     );
@@ -107,17 +103,15 @@ const Chat = () => {
 
   return (
     <div className="h-screen bg-background flex flex-col">
-      {/* Header */}
       <header className="glass-strong border-b border-border/30 px-4 py-3 flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate("/")} className="rounded-xl">
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <MessageCircle className="w-5 h-5 text-primary" />
-        <h1 className="font-display font-bold text-lg">Mesazhet</h1>
+        <h1 className="font-display font-bold text-lg">Messages</h1>
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar - conversation list */}
         <div className={`w-full md:w-80 border-r border-border/30 flex-shrink-0 ${activeConversationId ? "hidden md:flex" : "flex"} flex-col`}>
           <NewChatSearch
             currentUserId={user.id}
@@ -131,7 +125,6 @@ const Chat = () => {
           />
         </div>
 
-        {/* Main - message thread */}
         <div className={`flex-1 ${!activeConversationId ? "hidden md:flex" : "flex"} flex-col`}>
           {activeConversationId ? (
             <MessageThread
@@ -143,7 +136,7 @@ const Chat = () => {
             <div className="flex-1 flex items-center justify-center text-muted-foreground">
               <div className="text-center space-y-3">
                 <MessageCircle className="w-16 h-16 mx-auto opacity-30" />
-                <p className="font-medium">Zgjidh një bisedë</p>
+                <p className="font-medium">Select a conversation</p>
               </div>
             </div>
           )}

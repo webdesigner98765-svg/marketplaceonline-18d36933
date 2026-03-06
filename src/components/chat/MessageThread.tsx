@@ -62,7 +62,6 @@ export const MessageThread = ({ conversationId, currentUserId, onBack }: Message
 
     if (!error) {
       setInput("");
-      // Also update conversation's updated_at
       await supabase
         .from("conversations")
         .update({ updated_at: new Date().toISOString() })
@@ -73,14 +72,12 @@ export const MessageThread = ({ conversationId, currentUserId, onBack }: Message
 
   return (
     <>
-      {/* Mobile back button */}
       <div className="md:hidden border-b border-border/30 p-3">
         <Button variant="ghost" size="sm" onClick={onBack} className="gap-2">
-          <ArrowLeft className="w-4 h-4" /> Kthehu
+          <ArrowLeft className="w-4 h-4" /> Back
         </Button>
       </div>
 
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.map((msg) => {
           const isMe = msg.sender_id === currentUserId;
@@ -105,12 +102,11 @@ export const MessageThread = ({ conversationId, currentUserId, onBack }: Message
         <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
       <form onSubmit={handleSend} className="border-t border-border/30 p-3 flex gap-2">
         <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Shkruaj mesazh..."
+          placeholder="Type a message..."
           className="flex-1 rounded-xl bg-secondary/50 border-0"
         />
         <Button type="submit" size="icon" disabled={!input.trim() || sending} className="rounded-xl bg-gradient-primary shadow-button">

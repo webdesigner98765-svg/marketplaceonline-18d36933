@@ -16,7 +16,7 @@ const Pricing = () => {
 
   const handleSubscribe = async (priceId: string, planKey: string) => {
     if (!user) {
-      toast.error("Duhet të hysh për t'u abonuar");
+      toast.error("You must sign in to subscribe");
       return;
     }
 
@@ -31,7 +31,7 @@ const Pricing = () => {
       }
     } catch (err) {
       console.error("Checkout error:", err);
-      toast.error("Ndodhi një gabim me pagesën");
+      toast.error("Something went wrong with the payment");
     } finally {
       setLoadingPlan(null);
     }
@@ -46,7 +46,7 @@ const Pricing = () => {
       }
     } catch (err) {
       console.error("Portal error:", err);
-      toast.error("Ndodhi një gabim");
+      toast.error("Something went wrong");
     }
   };
 
@@ -65,11 +65,11 @@ const Pricing = () => {
             <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-button">
               <Crown className="w-5 h-5 text-primary-foreground" />
             </div>
-            <h1 className="font-display font-bold text-xl">Çmimet</h1>
+            <h1 className="font-display font-bold text-xl">Pricing</h1>
           </div>
           {subscribed && (
             <Button variant="outline" size="sm" onClick={handleManage} className="ml-auto rounded-xl">
-              Menaxho Abonimin
+              Manage Subscription
             </Button>
           )}
         </div>
@@ -79,13 +79,13 @@ const Pricing = () => {
         <div className="text-center mb-16 space-y-4">
           <div className="inline-flex items-center gap-2 glass px-5 py-2.5 rounded-full">
             <Sparkles className="w-4 h-4 text-primary" />
-            <span className="font-medium text-sm">Zgjidh planin tënd</span>
+            <span className="font-medium text-sm">Choose your plan</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-display font-bold">
-            Fillo të Shesësh <span className="text-gradient">Sot</span>
+            Start Selling <span className="text-gradient">Today</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Zgjidh planin që të përshtatet për të postuar produkte pa limit
+            Choose the plan that fits you to post unlimited products
           </p>
         </div>
 
@@ -99,7 +99,7 @@ const Pricing = () => {
                 key={key}
                 className={`relative glass rounded-3xl p-8 space-y-6 transition-all hover:scale-[1.02] ${
                   isActive ? "ring-2 ring-primary shadow-xl" : ""
-                } ${plan.badge === "Më Popullar" ? "md:-mt-4 md:mb-4" : ""}`}
+                } ${plan.badge === "Most Popular" ? "md:-mt-4 md:mb-4" : ""}`}
               >
                 {plan.badge && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-primary text-primary-foreground px-4 py-1 rounded-full text-xs font-bold shadow-button">
@@ -109,7 +109,7 @@ const Pricing = () => {
 
                 {isActive && (
                   <div className="absolute -top-3 right-4 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-bold">
-                    {isTrialing ? "Provë Falas" : "Aktiv"}
+                    {isTrialing ? "Free Trial" : "Active"}
                   </div>
                 )}
 
@@ -124,7 +124,7 @@ const Pricing = () => {
                 </div>
 
                 <ul className="space-y-3">
-                  {["Postim produktesh pa limit", "Chat me blerësit", "Mbështetje prioritare", "Pa reklama"].map((f) => (
+                  {["Unlimited product listings", "Chat with buyers", "Priority support", "No ads"].map((f) => (
                     <li key={f} className="flex items-center gap-3 text-sm">
                       <Check className="w-4 h-4 text-primary flex-shrink-0" />
                       {f}
@@ -133,14 +133,14 @@ const Pricing = () => {
                   {plan.trial && (
                     <li className="flex items-center gap-3 text-sm font-semibold text-primary">
                       <Check className="w-4 h-4 flex-shrink-0" />
-                      2 javë provë falas
+                      2 weeks free trial
                     </li>
                   )}
                 </ul>
 
                 {isActive ? (
                   <Button variant="outline" className="w-full h-12 rounded-2xl" onClick={handleManage}>
-                    Menaxho Planin
+                    Manage Plan
                   </Button>
                 ) : (
                   <Button
@@ -148,14 +148,14 @@ const Pricing = () => {
                     onClick={() => handleSubscribe(plan.price_id, key)}
                     disabled={isLoading}
                   >
-                    {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Abonohu Tani"}
+                    {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Subscribe Now"}
                   </Button>
                 )}
 
                 {isActive && subscriptionEnd && (
                   <p className="text-xs text-muted-foreground text-center">
-                    {isTrialing ? "Provë deri më " : "Rinovohet më "}
-                    {new Date(subscriptionEnd).toLocaleDateString("sq-AL")}
+                    {isTrialing ? "Trial ends on " : "Renews on "}
+                    {new Date(subscriptionEnd).toLocaleDateString("en-US")}
                   </p>
                 )}
               </div>
@@ -163,10 +163,9 @@ const Pricing = () => {
           })}
         </div>
 
-        {/* Refresh button */}
         <div className="text-center mt-8">
           <Button variant="ghost" size="sm" onClick={checkSubscription} className="text-muted-foreground">
-            Rifresko statusin e abonimit
+            Refresh subscription status
           </Button>
         </div>
       </main>

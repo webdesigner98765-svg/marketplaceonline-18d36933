@@ -35,7 +35,7 @@ export const NewChatSearch = ({ currentUserId, onConversationCreated }: NewChatS
   };
 
   const handleSelect = async (product: any) => {
-    if (product.user_id === currentUserId) return; // Can't chat with yourself
+    if (product.user_id === currentUserId) return;
     const { data: existing } = await supabase
       .from("conversations")
       .select("id")
@@ -51,7 +51,6 @@ export const NewChatSearch = ({ currentUserId, onConversationCreated }: NewChatS
       return;
     }
 
-    // Create new conversation
     const { data: created, error } = await supabase
       .from("conversations")
       .insert({
@@ -79,7 +78,7 @@ export const NewChatSearch = ({ currentUserId, onConversationCreated }: NewChatS
           className="w-full gap-2 rounded-xl border-dashed"
         >
           <Search className="w-4 h-4" />
-          Kërko produkt ose shitës
+          Search product or seller
         </Button>
       </div>
     );
@@ -94,7 +93,7 @@ export const NewChatSearch = ({ currentUserId, onConversationCreated }: NewChatS
             autoFocus
             value={query}
             onChange={(e) => handleSearch(e.target.value)}
-            placeholder="Kërko produkt..."
+            placeholder="Search product..."
             className="pl-9 rounded-xl bg-secondary/50 border-0"
           />
         </div>
@@ -137,7 +136,7 @@ export const NewChatSearch = ({ currentUserId, onConversationCreated }: NewChatS
 
       {query.length >= 2 && results.length === 0 && !searching && (
         <div className="p-4 text-center text-sm text-muted-foreground">
-          Asnjë produkt u gjet
+          No products found
         </div>
       )}
     </div>
