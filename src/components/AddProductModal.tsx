@@ -63,7 +63,7 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
     if (!selected) return;
 
     if (selected.size > MAX_FILE_SIZE) {
-      toast.error("Skedari është shumë i madh (max 20MB)");
+      toast.error("File is too large (max 20MB)");
       return;
     }
 
@@ -85,22 +85,22 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
     e.preventDefault();
 
     if (!title || !price || !description || !category || !contact) {
-      toast.error("Plotëso të gjitha fushat");
+      toast.error("Please fill in all fields");
       return;
     }
 
     if (!file) {
-      toast.error("Duhet të ngarkosh një foto ose video");
+      toast.error("You must upload a photo or video");
       return;
     }
 
     if (price.trim().length > 100) {
-      toast.error("Çmimi nuk mund të jetë më i gjatë se 100 karaktere");
+      toast.error("Price cannot be longer than 100 characters");
       return;
     }
 
     if (!user) {
-      toast.error("Duhet të hysh për të postuar");
+      toast.error("You must sign in to post");
       return;
     }
 
@@ -108,7 +108,6 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
     setUploadProgress(10);
 
     try {
-      // Upload file
       const ext = file.name.split(".").pop();
       const filePath = `${user.id}/${crypto.randomUUID()}.${ext}`;
 
@@ -142,7 +141,7 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
       if (error) throw error;
 
       setUploadProgress(100);
-      toast.success("Produkti u postua me sukses!");
+      toast.success("Product posted successfully!");
       queryClient.invalidateQueries({ queryKey: ["products"] });
       onClose();
       setTitle("");
@@ -154,7 +153,7 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
       setUploadProgress(0);
     } catch (err) {
       console.error("Error posting product:", err);
-      toast.error("Ndodhi një gabim. Provo përsëri.");
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -164,18 +163,18 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl">Posto Produkt të Ri</DialogTitle>
+          <DialogTitle className="text-2xl">Post New Product</DialogTitle>
           <DialogDescription>
-            Plotëso detajet e produktit për ta publikuar menjëherë
+            Fill in the product details to publish it immediately
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6 pt-4">
           <div className="space-y-2">
-            <Label htmlFor="title">Titulli i Produktit*</Label>
+            <Label htmlFor="title">Product Title*</Label>
             <Input
               id="title"
-              placeholder="p.sh. iPhone 14 Pro në gjendje të shkëlqyer"
+              placeholder="e.g. iPhone 14 Pro in excellent condition"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
@@ -183,11 +182,11 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="price">Çmimi*</Label>
+              <Label htmlFor="price">Price*</Label>
               <Input
                 id="price"
                 type="text"
-                placeholder="p.sh. 50€, Falas, Me marrëveshje"
+                placeholder="e.g. $50, Free, Negotiable"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 maxLength={100}
@@ -195,10 +194,10 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="category">Kategoria*</Label>
+              <Label htmlFor="category">Category*</Label>
               <Select value={category} onValueChange={setCategory}>
                 <SelectTrigger id="category">
-                  <SelectValue placeholder="Zgjidh kategorinë" />
+                  <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((cat) => (
@@ -212,10 +211,10 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Përshkrimi*</Label>
+            <Label htmlFor="description">Description*</Label>
             <Textarea
               id="description"
-              placeholder="Përshkruaj produktin tënd..."
+              placeholder="Describe your product..."
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -223,10 +222,10 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="contact">Kontakti* (telefon ose email)</Label>
+            <Label htmlFor="contact">Contact* (phone or email)</Label>
             <Input
               id="contact"
-              placeholder="p.sh. +355 69 123 4567 ose email@example.com"
+              placeholder="e.g. +1 234 567 8900 or email@example.com"
               value={contact}
               onChange={(e) => setContact(e.target.value)}
             />
@@ -234,7 +233,7 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
 
           {/* File Upload - Required */}
           <div className="space-y-2">
-            <Label>Foto ose Video e Produktit* <span className="text-destructive">(e detyrueshme)</span></Label>
+            <Label>Product Photo or Video* <span className="text-destructive">(required)</span></Label>
 
             {!file ? (
               <div
@@ -246,7 +245,7 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
                   <Video className="w-8 h-8 text-muted-foreground" />
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Kliko për të ngarkuar foto ose video
+                  Click to upload a photo or video
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   JPG, PNG, WebP, GIF, MP4, WebM (max 20MB)
@@ -295,10 +294,10 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
 
           <div className="flex gap-3 pt-4">
             <Button type="button" variant="outline" onClick={onClose} className="flex-1">
-              Anulo
+              Cancel
             </Button>
             <Button type="submit" variant="accent" className="flex-1" disabled={submitting}>
-              {submitting ? "Duke ngarkuar..." : "Publiko Produktin"}
+              {submitting ? "Uploading..." : "Publish Product"}
             </Button>
           </div>
         </form>

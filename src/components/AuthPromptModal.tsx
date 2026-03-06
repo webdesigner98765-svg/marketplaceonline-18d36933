@@ -19,7 +19,7 @@ export const AuthPromptModal = ({ open, onClose }: AuthPromptModalProps) => {
     try {
       await signInWithGoogle();
     } catch {
-      toast.error("Ndodhi një gabim me hyrjen. Provo përsëri.");
+      toast.error("Something went wrong. Please try again.");
       setIsLoading(false);
     }
   };
@@ -37,10 +37,10 @@ export const AuthPromptModal = ({ open, onClose }: AuthPromptModalProps) => {
             </svg>
           </div>
           <DialogTitle className="text-2xl font-display">
-            Hyr me Google
+            Sign in with Google
           </DialogTitle>
           <DialogDescription className="text-base">
-            Për të postuar produkte, duhet të hysh me llogarinë Google.
+            To post products, you need to sign in with a Google account.
           </DialogDescription>
         </DialogHeader>
 
@@ -61,10 +61,10 @@ export const AuthPromptModal = ({ open, onClose }: AuthPromptModalProps) => {
                 <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
               </svg>
             )}
-            Vazhdo me Google
+            Continue with Google
           </Button>
           <Button variant="ghost" onClick={onClose} className="w-full text-muted-foreground">
-            Anulo
+            Cancel
           </Button>
         </div>
       </DialogContent>

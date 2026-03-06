@@ -37,7 +37,7 @@ const Index = () => {
     if (!user) {
       setShowAuthPrompt(true);
     } else if (!subscribed) {
-      toast.info("Duhet një abonim aktiv për të postuar produkte");
+      toast.info("You need an active subscription to post products");
       navigate("/pricing");
     } else {
       setShowAddModal(true);
@@ -45,9 +45,9 @@ const Index = () => {
   };
 
   const features = [
-    { icon: Zap, title: "Postim i Shpejtë", desc: "Listo artikujt brenda sekondave" },
-    { icon: Shield, title: "Transaksione të Sigurta", desc: "Blerje e garantuar" },
-    { icon: Globe, title: "Mbulim Global", desc: "Lidhu me blerës kudo" },
+    { icon: Zap, title: "Fast Listing", desc: "List items in seconds" },
+    { icon: Shield, title: "Secure Transactions", desc: "Guaranteed purchases" },
+    { icon: Globe, title: "Global Reach", desc: "Connect with buyers everywhere" },
   ];
 
   return (
@@ -74,17 +74,17 @@ const Index = () => {
           <div className="max-w-2xl space-y-8">
             <div className="inline-flex items-center gap-2 glass px-5 py-2.5 rounded-full animate-fade-in" style={{ animationDelay: '0.1s' }}>
               <Sparkles className="w-4 h-4 text-primary" />
-              <span className="font-medium text-sm">Pa nevojë regjistrimi</span>
+              <span className="font-medium text-sm">No registration needed</span>
             </div>
             
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold leading-[1.1] animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              Bli & Shit{" "}
-              <span className="text-gradient">Çdo Gjë</span>
-              <br />Menjëherë
+              Buy & Sell{" "}
+              <span className="text-gradient">Anything</span>
+              <br />Instantly
             </h1>
             
             <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed animate-fade-in" style={{ animationDelay: '0.3s' }}>
-              Marketplace-i më i shpejtë për të listuar produkte dhe gjetur oferta të mira.
+              The fastest marketplace to list products and find great deals.
             </p>
             
             <div className="flex flex-wrap gap-4 animate-fade-in" style={{ animationDelay: '0.4s' }}>
@@ -93,7 +93,7 @@ const Index = () => {
                 size="lg" 
                 className="h-14 px-8 text-base font-semibold bg-gradient-primary hover:opacity-90 shadow-button rounded-2xl group"
               >
-                Reklamo Produktin Tënd
+                List Your Product
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
@@ -137,8 +137,8 @@ const Index = () => {
           <div className="flex-1">
             <div className="mb-10 flex items-center justify-between">
               <div>
-                <h2 className="text-3xl font-display font-bold">Zbulo Produkte</h2>
-                <p className="text-muted-foreground mt-1">{filteredProducts.length} produkte të disponueshme</p>
+                <h2 className="text-3xl font-display font-bold">Discover Products</h2>
+                <p className="text-muted-foreground mt-1">{filteredProducts.length} products available</p>
               </div>
             </div>
 
@@ -147,16 +147,16 @@ const Index = () => {
                 <div className="inline-flex p-8 rounded-3xl bg-gradient-primary/10 mb-8 animate-float">
                   <Package className="w-16 h-16 text-primary" />
                 </div>
-                <h3 className="text-3xl font-display font-bold mb-4">Asnjë produkt akoma</h3>
+                <h3 className="text-3xl font-display font-bold mb-4">No products yet</h3>
                 <p className="text-lg text-muted-foreground mb-10 max-w-md mx-auto">
-                  Bëhu i pari që poston një produkt!
+                  Be the first to list a product!
                 </p>
                 <Button 
                   onClick={handlePostProduct} 
                   size="lg" 
                   className="h-14 px-10 text-base font-semibold bg-gradient-primary hover:opacity-90 shadow-button rounded-2xl group"
                 >
-                  Posto Produktin e Parë
+                  Post Your First Product
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </div>
@@ -169,7 +169,7 @@ const Index = () => {
                       title={product.title}
                       price={product.price}
                       image={product.image_url || "/placeholder.svg"}
-                      location="Shqipëri"
+                      location="Global"
                       category={product.category}
                       rating={0}
                       reviewCount={0}
