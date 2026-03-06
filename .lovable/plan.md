@@ -1,97 +1,32 @@
 
 
-# Google Login + Database Setup for Marketplace
+## Plan: Translate App to English + Add Dark Mode Toggle in Settings
 
-## Overview
-Set up Google authentication so users must sign in with their Google account before posting products. Products will be saved to a real database. Browsing products remains open to everyone -- only posting requires login.
+### 1. Translate all Albanian text to English
 
-## What will change
+**Files to update:**
 
-### 1. Google Authentication
-- Add a "Sign in with Google" button in the header
-- When a user clicks "Post Product" without being logged in, they will be prompted to sign in first
-- Once signed in, the user's name/avatar from Google will appear in the header
-- A sign-out option will be available
+- **`src/config/subscriptions.ts`** — Plan names, intervals, descriptions, badges (e.g., "Mujor" → "Monthly", "muaj" → "month", "Më Popullar" → "Most Popular")
+- **`src/pages/Index.tsx`** — Hero text, features, empty state, toast messages
+- **`src/components/Header.tsx`** — "Posto Produkt", "Kërko produkte...", "Cilësimet", "Dil"
+- **`src/components/AuthPromptModal.tsx`** — "Vazhdo me Google" and description text
+- **`src/components/AddProductModal.tsx`** — All form labels, placeholders, button text
+- **`src/components/ProductCard.tsx`** — Confirm dialog, toast messages, location "Shqipëri" → "Albania"
+- **`src/pages/Settings.tsx`** — "Cilësimet", "Profili", "Dil nga llogaria"
+- **`src/pages/Pricing.tsx`** — All pricing page text, feature list, buttons
+- **`src/pages/Chat.tsx`** — "Mesazhet", "Identifikohu", "Zgjidh një bisedë", "Kthehu"
+- **`src/components/chat/ConversationList.tsx`** — "Asnjë bisedë akoma", remove Albanian date locale
+- **`src/components/chat/MessageThread.tsx`** — "Shkruaj mesazh...", "Kthehu"
+- **`src/components/chat/NewChatSearch.tsx`** — "Kërko produkt ose shitës", "Asnjë produkt u gjet"
 
-### 2. Database Tables
-Create the following tables to store data:
+### 2. Add Dark Mode Toggle in Settings
 
-- **profiles** -- stores user info (name, avatar, email) linked to their Google account
-- **products** -- stores all posted products (title, price, description, category, country, image URL, linked to the user who posted it)
+- **`src/pages/Settings.tsx`** — Add an "Appearance" section with a dark/light mode toggle switch using `next-themes` (already installed). Import `useTheme` from `next-themes`, add a Switch component to toggle between "light" and "dark".
+- **`src/App.tsx`** — Wrap the app with `<ThemeProvider attribute="class" defaultTheme="light">` from `next-themes`.
 
-### 3. Updated App Flow
-- Everyone can browse and search products without logging in
-- Clicking "Post Product" or "Start Selling" checks if the user is logged in
-  - If not logged in: shows a sign-in prompt with Google button
-  - If logged in: opens the product form as usual
-- Products are saved to the database and displayed in real-time
-- Each product shows who posted it
+The dark theme CSS variables are already defined in `src/index.css` under `.dark` class, so `next-themes` with `attribute="class"` will work out of the box.
 
----
-
-## Technical Details
-
-### Step 1: Configure Google OAuth
-- Use the Lovable Cloud managed Google OAuth (no API keys needed)
-- Configure social auth provider via the platform tool
-- This generates the `src/integrations/lovable/` module automatically
-
-### Step 2: Database Migration
-Create tables with proper security:
-
-```text
-profiles table:
-  - id (uuid, references auth.users)
-  - full_name (text)
-  - avatar_url (text)
-  - email (text)
-  - created_at (timestamp)
-
-products table:
-  - id (uuid, primary key)
-  - user_id (uuid, references profiles)
-  - title (text)
-  - price (numeric)
-  - description (text)
-  - category (text)
-  - country (text)
-  - image_url (text, nullable)
-  - created_at (timestamp)
-```
-
-Security policies:
-- **products**: Anyone can read (public marketplace), only authenticated users can insert their own products, only the owner can update/delete
-- **profiles**: Anyone can read, users can only update their own profile
-- Auto-create profile on Google sign-up via database trigger
-
-### Step 3: Auth Context Provider
-- Create `src/contexts/AuthContext.tsx` to manage authentication state globally
-- Provides current user, sign-in, sign-out functions
-- Listens to auth state changes
-
-### Step 4: Update Components
-
-**Header (`src/components/Header.tsx`)**:
-- Add user avatar + name when logged in
-- Add sign-in / sign-out button
-- Show Google sign-in option
-
-**Index page (`src/pages/Index.tsx`)**:
-- Fetch products from database instead of empty array
-- Pass auth state to control "Post Product" behavior
-- When clicking post buttons, check login status first
-
-**AddProductModal (`src/components/AddProductModal.tsx`)**:
-- Save product to database on submit
-- Attach logged-in user's ID and selected country
-- Show success/error feedback
-
-**New: AuthPromptModal**:
-- A modal that appears when unauthenticated users try to post
-- Shows "Sign in with Google" button
-- Clean design matching the app's style
-
-### Step 5: App Router Update
-- Wrap app with AuthContext provider
-- Add auth callback handling for Google redirect
+### Summary of changes
+- ~13 files edited for translation (string replacements only)
+- 2 files edited for dark mode (App.tsx wrapper + Settings.tsx toggle UI)
 
