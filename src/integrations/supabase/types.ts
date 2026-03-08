@@ -272,6 +272,7 @@ export type Database = {
       }
     }
     Functions: {
+      get_product_contact: { Args: { p_product_id: string }; Returns: string }
       get_profile_public: {
         Args: { profile_id: string }
         Returns: {
