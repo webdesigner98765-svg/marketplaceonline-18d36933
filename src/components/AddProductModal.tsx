@@ -139,12 +139,12 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
       const imageUrl = urlData.publicUrl;
 
       const { error } = await supabase.from("products").insert({
-        title: title.trim(),
-        price: price.trim(),
-        description: description.trim(),
-        category: category.toLowerCase(),
-        contact: contact.trim(),
-        country: selectedCountry,
+        title: parsed.data.title,
+        price: parsed.data.price,
+        description: parsed.data.description,
+        category: parsed.data.category.toLowerCase(),
+        contact: parsed.data.contact,
+        country: parsed.data.country,
         user_id: user.id,
         image_url: imageUrl,
       });
