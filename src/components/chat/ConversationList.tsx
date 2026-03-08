@@ -23,7 +23,7 @@ export const ConversationList = ({ conversations, activeId, currentUserId, onSel
       {conversations.map((conv) => {
         const isBuyer = currentUserId === conv.buyer_id;
         const otherUser = isBuyer ? conv.seller : conv.buyer;
-        const otherName = otherUser?.full_name || otherUser?.email || "User";
+        const otherName = otherUser?.full_name || "User";
         const initials = otherName.substring(0, 2).toUpperCase();
         const productTitle = conv.products?.title || "Product";
 
