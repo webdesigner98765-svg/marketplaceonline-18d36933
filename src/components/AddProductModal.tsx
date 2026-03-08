@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { Upload, X, Image, Video, Search } from "lucide-react";
+import { z } from "zod";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Dialog,
@@ -83,21 +84,29 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
 
   const isVideo = file?.type.startsWith("video/");
 
+  const productSchema = z.object({
+    title: z.string().trim().min(1, "Title is required").max(200, "Title too long"),
+    price: z.string().trim().min(1, "Price is required").max(100, "Price too long"),
+    description: z.string().trim().min(1, "Description is required").max(5000, "Description too long"),
+    category: z.string().min(1, "Category is required"),
+    contact: z.string().trim().min(1, "Contact is required").max(200, "Contact too long"),
+    country: z.string().min(1, "Country is required"),
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!title || !price || !description || !category || !contact || !selectedCountry) {
-      toast.error("Please fill in all fields including country");
+    const parsed = productSchema.safeParse({
+      title, price, description, category, contact, country: selectedCountry,
+    });
+
+    if (!parsed.success) {
+      toast.error(parsed.error.errors[0].message);
       return;
     }
 
     if (!file) {
       toast.error("You must upload a photo or video");
-      return;
-    }
-
-    if (price.trim().length > 100) {
-      toast.error("Price cannot be longer than 100 characters");
       return;
     }
 
