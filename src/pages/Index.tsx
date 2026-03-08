@@ -59,22 +59,22 @@ const Index = () => {
       />
 
       {/* Hero Section */}
-      <section className="relative min-h-[600px] overflow-hidden">
+      <section className="relative min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] overflow-hidden">
         <div className="absolute inset-0">
           <img src={heroImage} alt="Home interior" className="w-full h-full object-cover scale-105" />
           <div className="absolute inset-0 bg-gradient-to-r from-background via-background/95 to-background/40" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
         </div>
         
-        <div className="relative container mx-auto px-6 py-20 lg:py-32">
-          <div className="max-w-2xl space-y-8">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold leading-[1.1] animate-fade-in" style={{ animationDelay: '0.2s' }}>
+        <div className="relative container mx-auto px-4 sm:px-6 py-12 sm:py-20 lg:py-32">
+          <div className="max-w-2xl space-y-5 sm:space-y-8">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold leading-[1.1] animate-fade-in" style={{ animationDelay: '0.2s' }}>
               {t("hero_title_1")}{" "}
               <span className="text-gradient">{t("hero_title_2")}</span>
               <br />{t("hero_title_3")}
             </h1>
             
-            <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <p className="text-base sm:text-xl md:text-2xl text-muted-foreground leading-relaxed animate-fade-in" style={{ animationDelay: '0.3s' }}>
               {t("hero_subtitle")}
             </p>
             
@@ -82,7 +82,7 @@ const Index = () => {
               <Button 
                 onClick={handlePostProduct} 
                 size="lg" 
-                className="h-14 px-8 text-base font-semibold bg-gradient-primary hover:opacity-90 shadow-button rounded-2xl group"
+                className="h-12 sm:h-14 px-6 sm:px-8 text-sm sm:text-base font-semibold bg-gradient-primary hover:opacity-90 shadow-button rounded-2xl group"
               >
                 {t("list_product")}
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
