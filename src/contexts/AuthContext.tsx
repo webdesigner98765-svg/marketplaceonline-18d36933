@@ -3,6 +3,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import type { User, Session } from "@supabase/supabase-js";
 
+const isLovableDomain = () => {
+  const hostname = window.location.hostname;
+  return hostname.includes("lovable.app") || hostname.includes("lovableproject.com") || hostname === "localhost";
+};
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -37,12 +42,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const signInWithGoogle = async () => {
-    const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (error) {
-      console.error("Google sign-in error:", error);
-      throw error;
+    if (isLovableDomain()) {
+      const { error } = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (error) {
+        console.error("Google sign-in error:", error);
+        throw error;
+      }
+    } else {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: window.location.origin,
+        },
+      });
+      if (error) {
+        console.error("Google sign-in error:", error);
+        throw error;
+      }
     }
   };
 
