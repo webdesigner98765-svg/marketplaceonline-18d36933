@@ -7,8 +7,9 @@ import { AuthPromptModal } from "@/components/AuthPromptModal";
 import { Filters } from "@/components/Filters";
 
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import heroImage from "@/assets/home-interior.jpg";
-import { Package, ArrowRight, Zap, Shield, Globe } from "lucide-react";
+import { Package, ArrowRight, Zap, Shield, Globe, SlidersHorizontal } from "lucide-react";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -59,22 +60,22 @@ const Index = () => {
       />
 
       {/* Hero Section */}
-      <section className="relative min-h-[600px] overflow-hidden">
+      <section className="relative min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] overflow-hidden">
         <div className="absolute inset-0">
           <img src={heroImage} alt="Home interior" className="w-full h-full object-cover scale-105" />
           <div className="absolute inset-0 bg-gradient-to-r from-background via-background/95 to-background/40" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
         </div>
         
-        <div className="relative container mx-auto px-6 py-20 lg:py-32">
-          <div className="max-w-2xl space-y-8">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold leading-[1.1] animate-fade-in" style={{ animationDelay: '0.2s' }}>
+        <div className="relative container mx-auto px-4 sm:px-6 py-12 sm:py-20 lg:py-32">
+          <div className="max-w-2xl space-y-5 sm:space-y-8">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold leading-[1.1] animate-fade-in" style={{ animationDelay: '0.2s' }}>
               {t("hero_title_1")}{" "}
               <span className="text-gradient">{t("hero_title_2")}</span>
               <br />{t("hero_title_3")}
             </h1>
             
-            <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <p className="text-base sm:text-xl md:text-2xl text-muted-foreground leading-relaxed animate-fade-in" style={{ animationDelay: '0.3s' }}>
               {t("hero_subtitle")}
             </p>
             
@@ -82,7 +83,7 @@ const Index = () => {
               <Button 
                 onClick={handlePostProduct} 
                 size="lg" 
-                className="h-14 px-8 text-base font-semibold bg-gradient-primary hover:opacity-90 shadow-button rounded-2xl group"
+                className="h-12 sm:h-14 px-6 sm:px-8 text-sm sm:text-base font-semibold bg-gradient-primary hover:opacity-90 shadow-button rounded-2xl group"
               >
                 {t("list_product")}
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -93,17 +94,17 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section className="relative py-16 border-y border-border/50">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <section className="relative py-10 sm:py-16 border-y border-border/50">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
             {features.map((feature, i) => (
-              <div key={feature.title} className="flex items-center gap-4 animate-fade-in" style={{ animationDelay: `${0.1 * i}s` }}>
-                <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-button">
-                  <feature.icon className="w-6 h-6 text-primary-foreground" />
+              <div key={feature.title} className="flex items-center gap-3 sm:gap-4 animate-fade-in" style={{ animationDelay: `${0.1 * i}s` }}>
+                <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-button">
+                  <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
                 </div>
                 <div>
-                  <h3 className="font-display font-semibold text-lg">{feature.title}</h3>
-                  <p className="text-muted-foreground">{feature.desc}</p>
+                  <h3 className="font-display font-semibold text-base sm:text-lg">{feature.title}</h3>
+                  <p className="text-muted-foreground text-sm sm:text-base">{feature.desc}</p>
                 </div>
               </div>
             ))}
@@ -112,9 +113,10 @@ const Index = () => {
       </section>
 
       {/* Main Content */}
-      <main className="relative container mx-auto px-6 py-16">
-        <div className="flex flex-col lg:flex-row gap-12">
-          <aside className="lg:w-72 shrink-0">
+      <main className="relative container mx-auto px-4 sm:px-6 py-8 sm:py-16">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+          {/* Desktop Filters */}
+          <aside className="hidden lg:block lg:w-72 shrink-0">
             <div className="lg:sticky lg:top-28">
               <Filters
                 selectedCategory={selectedCategory}
@@ -125,33 +127,53 @@ const Index = () => {
           </aside>
 
           <div className="flex-1">
-            <div className="mb-10 flex items-center justify-between">
+            <div className="mb-6 sm:mb-10 flex items-center justify-between gap-4">
               <div>
-                <h2 className="text-3xl font-display font-bold">{t("discover_products")}</h2>
-                <p className="text-muted-foreground mt-1">{filteredProducts.length} {t("products_available")}</p>
+                <h2 className="text-2xl sm:text-3xl font-display font-bold">{t("discover_products")}</h2>
+                <p className="text-muted-foreground mt-1 text-sm sm:text-base">{filteredProducts.length} {t("products_available")}</p>
               </div>
+
+              {/* Mobile Filter Button */}
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="sm" className="lg:hidden gap-2 rounded-xl">
+                    <SlidersHorizontal className="w-4 h-4" />
+                    {t("filters")}
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-80 p-0">
+                  <SheetTitle className="sr-only">{t("filters")}</SheetTitle>
+                  <div className="p-4">
+                    <Filters
+                      selectedCategory={selectedCategory}
+                      onCategoryChange={setSelectedCategory}
+                      onReset={() => { setSelectedCategory("all"); setSearchQuery(""); }}
+                    />
+                  </div>
+                </SheetContent>
+              </Sheet>
             </div>
 
             {filteredProducts.length === 0 ? (
-              <div className="text-center py-24 glass rounded-3xl">
-                <div className="inline-flex p-8 rounded-3xl bg-gradient-primary/10 mb-8 animate-float">
-                  <Package className="w-16 h-16 text-primary" />
+              <div className="text-center py-16 sm:py-24 glass rounded-3xl px-4">
+                <div className="inline-flex p-6 sm:p-8 rounded-3xl bg-gradient-primary/10 mb-6 sm:mb-8 animate-float">
+                  <Package className="w-12 h-12 sm:w-16 sm:h-16 text-primary" />
                 </div>
-                <h3 className="text-3xl font-display font-bold mb-4">{t("no_products")}</h3>
-                <p className="text-lg text-muted-foreground mb-10 max-w-md mx-auto">
+                <h3 className="text-2xl sm:text-3xl font-display font-bold mb-3 sm:mb-4">{t("no_products")}</h3>
+                <p className="text-base sm:text-lg text-muted-foreground mb-8 sm:mb-10 max-w-md mx-auto">
                   {t("no_products_desc")}
                 </p>
                 <Button 
                   onClick={handlePostProduct} 
                   size="lg" 
-                  className="h-14 px-10 text-base font-semibold bg-gradient-primary hover:opacity-90 shadow-button rounded-2xl group"
+                  className="h-12 sm:h-14 px-8 sm:px-10 text-sm sm:text-base font-semibold bg-gradient-primary hover:opacity-90 shadow-button rounded-2xl group"
                 >
                   {t("post_first_product")}
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-8">
                 {filteredProducts.map((product, i) => (
                   <div key={product.id} className="animate-fade-in" style={{ animationDelay: `${0.05 * i}s` }}>
                     <ProductCard
