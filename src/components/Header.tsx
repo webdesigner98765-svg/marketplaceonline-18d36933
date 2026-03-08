@@ -1,4 +1,4 @@
-import { Search, Plus, Sparkles, LogOut, Settings, MessageCircle, Menu, X } from "lucide-react";
+import { Search, Plus, Sparkles, LogOut, Settings, MessageCircle, Menu, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useState } from "react";
+import { usePWAInstall } from "@/hooks/usePWAInstall";
 
 interface HeaderProps {
   onAddProduct: () => void;
@@ -26,6 +27,7 @@ export const Header = ({ onAddProduct, searchQuery, onSearchChange }: HeaderProp
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const { canInstall, isInstalled, install } = usePWAInstall();
 
   const userEmail = user?.email || "";
   const initials = userEmail
@@ -69,6 +71,18 @@ export const Header = ({ onAddProduct, searchQuery, onSearchChange }: HeaderProp
           {/* Spacer for mobile */}
           <div className="flex-1 md:hidden" />
           
+          {/* Desktop Download App Button */}
+          {canInstall && !isInstalled && (
+            <Button
+              onClick={install}
+              variant="outline"
+              className="gap-2 font-semibold h-12 px-5 rounded-xl hidden md:flex"
+            >
+              <Download className="w-5 h-5" />
+              Download App
+            </Button>
+          )}
+
           {/* Desktop CTA Button */}
           <Button 
             onClick={onAddProduct} 
@@ -164,6 +178,16 @@ export const Header = ({ onAddProduct, searchQuery, onSearchChange }: HeaderProp
                     <Plus className="w-5 h-5" />
                     {t("post_product")}
                   </button>
+
+                  {canInstall && !isInstalled && (
+                    <button
+                      onClick={() => { install(); setMobileMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-secondary/80 transition-colors"
+                    >
+                      <Download className="w-5 h-5 text-muted-foreground" />
+                      <span className="font-medium">Download App</span>
+                    </button>
+                  )}
 
                   {user && (
                     <button
