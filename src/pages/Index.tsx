@@ -11,14 +11,12 @@ import heroImage from "@/assets/home-interior.jpg";
 import { Sparkles, Package, ArrowRight, Zap, Shield, Globe } from "lucide-react";
 
 import { useAuth } from "@/contexts/AuthContext";
-import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useProducts } from "@/hooks/useProducts";
 import { toast } from "sonner";
 
 
 const Index = () => {
   const { user } = useAuth();
-  const { subscribed } = useSubscription();
   const navigate = useNavigate();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
@@ -36,9 +34,6 @@ const Index = () => {
   const handlePostProduct = () => {
     if (!user) {
       setShowAuthPrompt(true);
-    } else if (!subscribed) {
-      toast.info("You need an active subscription to post products");
-      navigate("/pricing");
     } else {
       setShowAddModal(true);
     }
