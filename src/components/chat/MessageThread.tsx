@@ -46,6 +46,28 @@ export const MessageThread = ({ conversationId, currentUserId, onBack }: Message
     return () => { supabase.removeChannel(channel); };
   }, [conversationId]);
 
+  // Fetch seller contact via secure function
+  useEffect(() => {
+    const fetchContact = async () => {
+      // First get the product_id from the conversation
+      const { data: conv } = await supabase
+        .from("conversations")
+        .select("product_id")
+        .eq("id", conversationId)
+        .single();
+
+      if (!conv) return;
+
+      const { data } = await supabase.rpc("get_product_contact", {
+        p_product_id: conv.product_id,
+      });
+
+      if (data) setSellerContact(data);
+    };
+
+    fetchContact();
+  }, [conversationId]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
