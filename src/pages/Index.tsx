@@ -14,6 +14,7 @@ import { Package, ArrowRight, Zap, Shield, Globe, SlidersHorizontal } from "luci
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useProducts } from "@/hooks/useProducts";
+import { useCountryNames } from "@/hooks/useCountryNames";
 
 const Index = () => {
   const { user } = useAuth();
@@ -25,6 +26,7 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const { data: products = [] } = useProducts();
+  const getCountryName = useCountryNames();
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -181,7 +183,7 @@ const Index = () => {
                       title={product.title}
                       price={product.price}
                       image={product.image_url || "/placeholder.svg"}
-                      location="Global"
+                      location={product.country ? getCountryName(product.country) : "Global"}
                       category={product.category}
                       rating={0}
                       reviewCount={0}
