@@ -42,7 +42,7 @@ const categories = [
 ];
 
 const ACCEPTED_TYPES = "image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime";
-const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+const MAX_FILE_SIZE = 2 * 1024 * 1024 * 1024; // 2GB
 
 export const AddProductModal = ({ open, onClose, country }: AddProductModalProps) => {
   const { user } = useAuth();
@@ -63,7 +63,7 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
     if (!selected) return;
 
     if (selected.size > MAX_FILE_SIZE) {
-      toast.error("File is too large (max 20MB)");
+      toast.error("File is too large (max 2GB)");
       return;
     }
 
@@ -248,7 +248,7 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
                   Click to upload a photo or video
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  JPG, PNG, WebP, GIF, MP4, WebM (max 20MB)
+                  JPG, PNG, WebP, GIF, MP4, WebM (max 2GB)
                 </p>
               </div>
             ) : (
