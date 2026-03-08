@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface HeaderProps {
   onAddProduct: () => void;
@@ -19,6 +20,7 @@ interface HeaderProps {
 
 export const Header = ({ onAddProduct, searchQuery, onSearchChange }: HeaderProps) => {
   const { user, signOut } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const userEmail = user?.email || "";
@@ -43,7 +45,7 @@ export const Header = ({ onAddProduct, searchQuery, onSearchChange }: HeaderProp
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <Input
               type="text"
-              placeholder="Search products..."
+              placeholder={t("search_products")}
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               className="pl-12 h-12 bg-secondary/50 border-0 rounded-xl focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60"
@@ -57,7 +59,7 @@ export const Header = ({ onAddProduct, searchQuery, onSearchChange }: HeaderProp
             className="gap-2 font-semibold h-12 px-6 bg-gradient-primary hover:opacity-90 rounded-xl shadow-button hidden sm:flex"
           >
             <Plus className="w-5 h-5" />
-            Post Product
+            {t("post_product")}
           </Button>
           
           {/* Mobile CTA */}
@@ -108,11 +110,11 @@ export const Header = ({ onAddProduct, searchQuery, onSearchChange }: HeaderProp
                 </div>
                 <DropdownMenuItem onClick={() => navigate("/settings")} className="gap-2 cursor-pointer">
                   <Settings className="w-4 h-4" />
-                  Settings
+                  {t("settings")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={signOut} className="gap-2 text-destructive cursor-pointer">
                   <LogOut className="w-4 h-4" />
-                  Sign Out
+                  {t("sign_out")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

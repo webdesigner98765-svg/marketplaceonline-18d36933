@@ -8,15 +8,15 @@ import { Filters } from "@/components/Filters";
 
 import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/home-interior.jpg";
-import { Sparkles, Package, ArrowRight, Zap, Shield, Globe } from "lucide-react";
+import { Package, ArrowRight, Zap, Shield, Globe } from "lucide-react";
 
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useProducts } from "@/hooks/useProducts";
-import { toast } from "sonner";
-
 
 const Index = () => {
   const { user } = useAuth();
+  const { t, preferredCountry } = useLanguage();
   const navigate = useNavigate();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
@@ -28,7 +28,8 @@ const Index = () => {
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    const matchesCountry = !preferredCountry || product.country === preferredCountry;
+    return matchesSearch && matchesCategory && matchesCountry;
   });
 
   const handlePostProduct = () => {
@@ -40,9 +41,9 @@ const Index = () => {
   };
 
   const features = [
-    { icon: Zap, title: "Fast Listing", desc: "List items in seconds" },
-    { icon: Shield, title: "Secure Transactions", desc: "Guaranteed purchases" },
-    { icon: Globe, title: "Global Reach", desc: "Connect with buyers everywhere" },
+    { icon: Zap, title: t("fast_listing"), desc: t("fast_listing_desc") },
+    { icon: Shield, title: t("secure_transactions"), desc: t("secure_transactions_desc") },
+    { icon: Globe, title: t("global_reach"), desc: t("global_reach_desc") },
   ];
 
   return (
@@ -67,19 +68,14 @@ const Index = () => {
         
         <div className="relative container mx-auto px-6 py-20 lg:py-32">
           <div className="max-w-2xl space-y-8">
-            <div className="inline-flex items-center gap-2 glass px-5 py-2.5 rounded-full animate-fade-in" style={{ animationDelay: '0.1s' }}>
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span className="font-medium text-sm">No registration needed</span>
-            </div>
-            
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold leading-[1.1] animate-fade-in" style={{ animationDelay: '0.2s' }}>
-              Buy & Sell{" "}
-              <span className="text-gradient">Anything</span>
-              <br />Instantly
+              {t("hero_title_1")}{" "}
+              <span className="text-gradient">{t("hero_title_2")}</span>
+              <br />{t("hero_title_3")}
             </h1>
             
             <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed animate-fade-in" style={{ animationDelay: '0.3s' }}>
-              The fastest marketplace to list products and find great deals.
+              {t("hero_subtitle")}
             </p>
             
             <div className="flex flex-wrap gap-4 animate-fade-in" style={{ animationDelay: '0.4s' }}>
@@ -88,11 +84,10 @@ const Index = () => {
                 size="lg" 
                 className="h-14 px-8 text-base font-semibold bg-gradient-primary hover:opacity-90 shadow-button rounded-2xl group"
               >
-                List Your Product
+                {t("list_product")}
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
-
           </div>
         </div>
       </section>
@@ -132,8 +127,8 @@ const Index = () => {
           <div className="flex-1">
             <div className="mb-10 flex items-center justify-between">
               <div>
-                <h2 className="text-3xl font-display font-bold">Discover Products</h2>
-                <p className="text-muted-foreground mt-1">{filteredProducts.length} products available</p>
+                <h2 className="text-3xl font-display font-bold">{t("discover_products")}</h2>
+                <p className="text-muted-foreground mt-1">{filteredProducts.length} {t("products_available")}</p>
               </div>
             </div>
 
@@ -142,16 +137,16 @@ const Index = () => {
                 <div className="inline-flex p-8 rounded-3xl bg-gradient-primary/10 mb-8 animate-float">
                   <Package className="w-16 h-16 text-primary" />
                 </div>
-                <h3 className="text-3xl font-display font-bold mb-4">No products yet</h3>
+                <h3 className="text-3xl font-display font-bold mb-4">{t("no_products")}</h3>
                 <p className="text-lg text-muted-foreground mb-10 max-w-md mx-auto">
-                  Be the first to list a product!
+                  {t("no_products_desc")}
                 </p>
                 <Button 
                   onClick={handlePostProduct} 
                   size="lg" 
                   className="h-14 px-10 text-base font-semibold bg-gradient-primary hover:opacity-90 shadow-button rounded-2xl group"
                 >
-                  Post Your First Product
+                  {t("post_first_product")}
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </div>
