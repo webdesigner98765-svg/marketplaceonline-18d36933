@@ -16,6 +16,7 @@ export const MessageThread = ({ conversationId, currentUserId, onBack }: Message
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [sellerContact, setSellerContact] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
