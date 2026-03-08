@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Upload, X, Image, Video } from "lucide-react";
+import { Upload, X, Image, Video, Search } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Dialog,
@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Progress } from "@/components/ui/progress";
+import { countries } from "@/data/countries";
 
 interface AddProductModalProps {
   open: boolean;
@@ -52,6 +53,7 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [contact, setContact] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState(country || "");
   const [submitting, setSubmitting] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -84,8 +86,8 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!title || !price || !description || !category || !contact) {
-      toast.error("Please fill in all fields");
+    if (!title || !price || !description || !category || !contact || !selectedCountry) {
+      toast.error("Please fill in all fields including country");
       return;
     }
 
@@ -133,7 +135,7 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
         description: description.trim(),
         category: category.toLowerCase(),
         contact: contact.trim(),
-        country: country || undefined,
+        country: selectedCountry,
         user_id: user.id,
         image_url: imageUrl,
       });
@@ -149,6 +151,7 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
       setDescription("");
       setCategory("");
       setContact("");
+      setSelectedCountry("");
       removeFile();
       setUploadProgress(0);
     } catch (err) {
@@ -208,6 +211,25 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="country">Country*</Label>
+            <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+              <SelectTrigger id="country">
+                <SelectValue placeholder="Select country" />
+              </SelectTrigger>
+              <SelectContent className="max-h-60">
+                {countries.map((c) => (
+                  <SelectItem key={c.code} value={c.code}>
+                    <span className="flex items-center gap-2">
+                      <span>{c.flag}</span>
+                      <span>{c.name}</span>
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
