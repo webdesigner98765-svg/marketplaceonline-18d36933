@@ -171,7 +171,7 @@ export const Header = ({ onAddProduct, searchQuery, onSearchChange }: HeaderProp
                       className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-secondary/80 transition-colors"
                     >
                       <MessageCircle className="w-5 h-5 text-muted-foreground" />
-                      <span className="font-medium">{t("messages") || "Messages"}</span>
+                      <span className="font-medium">{"Messages"}</span>
                     </button>
                   )}
 
