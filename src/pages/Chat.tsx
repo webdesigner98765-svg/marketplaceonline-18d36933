@@ -62,8 +62,8 @@ const Chat = () => {
           seller_id,
           updated_at,
           products ( title, image_url ),
-          buyer:profiles!conversations_buyer_id_fkey ( email, full_name ),
-          seller:profiles!conversations_seller_id_fkey ( email, full_name )
+          buyer:profiles_public!conversations_buyer_id_fkey ( full_name, avatar_url ),
+          seller:profiles_public!conversations_seller_id_fkey ( full_name, avatar_url )
         `)
         .order("updated_at", { ascending: false });
 
