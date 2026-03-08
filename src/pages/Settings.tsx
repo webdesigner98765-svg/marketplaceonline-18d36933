@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "next-themes";
-import { ArrowLeft, LogOut, User, Sparkles, Moon, Sun, Globe, MapPin, Search, Check } from "lucide-react";
+import { ArrowLeft, LogOut, User, Sparkles, Moon, Sun, Globe, MapPin, Search, Check, Monitor } from "lucide-react";
 import { languages } from "@/i18n/translations";
 import { countries } from "@/data/countries";
 
@@ -169,17 +169,25 @@ const Settings = () => {
               <p className="text-muted-foreground text-sm">{t("customize_look")}</p>
             </div>
           </div>
-          <div className="flex items-center justify-between p-4 rounded-2xl bg-secondary/50">
-            <div className="flex items-center gap-3">
-              {theme === "dark" ? <Moon className="w-5 h-5 text-primary" /> : <Sun className="w-5 h-5 text-primary" />}
-              <div>
-                <p className="font-medium">{t("dark_mode")}</p>
-                <p className="text-sm text-muted-foreground">
-                  {theme === "dark" ? t("using_dark") : t("using_light")}
-                </p>
-              </div>
-            </div>
-            <Switch checked={theme === "dark"} onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")} />
+          <div className="grid grid-cols-3 gap-3">
+            {([
+              { value: "system", icon: Monitor, label: "Auto" },
+              { value: "light", icon: Sun, label: "Light" },
+              { value: "dark", icon: Moon, label: "Dark" },
+            ] as const).map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setTheme(opt.value)}
+                className={`flex flex-col items-center gap-2 p-4 rounded-2xl transition-all ${
+                  theme === opt.value
+                    ? "bg-gradient-primary text-primary-foreground shadow-button"
+                    : "bg-secondary/50 hover:bg-secondary/80 text-foreground"
+                }`}
+              >
+                <opt.icon className="w-6 h-6" />
+                <span className="font-medium text-sm">{opt.label}</span>
+              </button>
+            ))}
           </div>
         </section>
       </main>
