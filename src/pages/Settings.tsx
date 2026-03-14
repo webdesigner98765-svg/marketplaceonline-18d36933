@@ -272,7 +272,6 @@ const Settings = () => {
           </div>
           <div className="grid grid-cols-3 gap-3">
             {([
-              { value: "system", icon: Monitor, label: "Auto" },
               { value: "light", icon: Sun, label: "Light" },
               { value: "dark", icon: Moon, label: "Dark" },
             ] as const).map((opt) => (
