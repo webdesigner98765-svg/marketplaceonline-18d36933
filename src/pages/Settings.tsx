@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "next-themes";
-import { ArrowLeft, LogOut, User, Sparkles, Moon, Sun, Globe, MapPin, Search, Check, Monitor, Package, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, LogOut, User, Sparkles, Moon, Sun, Globe, MapPin, Search, Check, Package, Pencil, Trash2 } from "lucide-react";
 import { languages } from "@/i18n/translations";
 import { countries } from "@/data/countries";
 import { useMyProducts } from "@/hooks/useMyProducts";
