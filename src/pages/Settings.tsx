@@ -270,7 +270,7 @@ const Settings = () => {
               <p className="text-muted-foreground text-sm">{t("customize_look")}</p>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             {([
               { value: "light", icon: Sun, label: "Light" },
               { value: "dark", icon: Moon, label: "Dark" },
