@@ -1,14 +1,28 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "next-themes";
-import { ArrowLeft, LogOut, User, Sparkles, Moon, Sun, Globe, MapPin, Search, Check, Monitor } from "lucide-react";
+import { ArrowLeft, LogOut, User, Sparkles, Moon, Sun, Globe, MapPin, Search, Check, Monitor, Package, Pencil, Trash2 } from "lucide-react";
 import { languages } from "@/i18n/translations";
 import { countries } from "@/data/countries";
+import { useMyProducts } from "@/hooks/useMyProducts";
+import { EditProductModal } from "@/components/EditProductModal";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -17,6 +31,10 @@ const Settings = () => {
   const { language, setLanguage, preferredCountry, setPreferredCountry, t } = useLanguage();
   const [langSearch, setLangSearch] = useState("");
   const [countrySearch, setCountrySearch] = useState("");
+  const { data: myProducts, isLoading: productsLoading } = useMyProducts();
+  const [editProduct, setEditProduct] = useState<any>(null);
+  const [deleteProductId, setDeleteProductId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   const filteredLanguages = languages.filter((l) =>
     l.name.toLowerCase().includes(langSearch.toLowerCase())
@@ -25,6 +43,27 @@ const Settings = () => {
   const filteredCountries = countries.filter((c) =>
     c.name.toLowerCase().includes(countrySearch.toLowerCase())
   );
+
+  const getCountryName = (code: string | null) => {
+    if (!code) return "";
+    return countries.find((c) => c.code === code)?.name || code;
+  };
+
+  const handleDelete = async () => {
+    if (!deleteProductId) return;
+    try {
+      const { error } = await supabase.from("products").delete().eq("id", deleteProductId);
+      if (error) throw error;
+      toast.success("Product deleted");
+      queryClient.invalidateQueries({ queryKey: ["my-products"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete product");
+    } finally {
+      setDeleteProductId(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -65,6 +104,68 @@ const Settings = () => {
               <LogOut className="w-5 h-5" />
               {t("sign_out")}
             </Button>
+          </section>
+        )}
+
+        {/* My Products */}
+        {user && (
+          <section className="glass rounded-3xl p-8 space-y-6 animate-fade-in" style={{ animationDelay: "0.05s" }}>
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-button">
+                <Package className="w-7 h-7 text-primary-foreground" />
+              </div>
+              <div>
+                <h2 className="font-display font-bold text-xl">My Products</h2>
+                <p className="text-muted-foreground text-sm">Manage your listings</p>
+              </div>
+            </div>
+
+            {productsLoading ? (
+              <div className="text-center py-8 text-muted-foreground">Loading...</div>
+            ) : !myProducts?.length ? (
+              <div className="text-center py-8 text-muted-foreground">
+                You haven't posted any products yet
+              </div>
+            ) : (
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {myProducts.map((product) => (
+                  <div
+                    key={product.id}
+                    className="flex items-center gap-4 p-4 rounded-2xl bg-secondary/50 hover:bg-secondary/80 transition-all"
+                  >
+                    {product.image_url && (
+                      <img
+                        src={product.image_url}
+                        alt={product.title}
+                        className="w-14 h-14 rounded-xl object-cover flex-shrink-0"
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">{product.title}</p>
+                      <p className="text-sm text-muted-foreground">{product.price} · {getCountryName(product.country)}</p>
+                    </div>
+                    <div className="flex gap-2 flex-shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 rounded-xl hover:bg-primary/10 text-primary"
+                        onClick={() => setEditProduct(product)}
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 rounded-xl hover:bg-destructive/10 text-destructive"
+                        onClick={() => setDeleteProductId(product.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
         )}
 
@@ -191,6 +292,31 @@ const Settings = () => {
           </div>
         </section>
       </main>
+
+      {/* Edit Modal */}
+      <EditProductModal
+        open={!!editProduct}
+        onClose={() => setEditProduct(null)}
+        product={editProduct}
+      />
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={!!deleteProductId} onOpenChange={() => setDeleteProductId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Product?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. The product will be permanently removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

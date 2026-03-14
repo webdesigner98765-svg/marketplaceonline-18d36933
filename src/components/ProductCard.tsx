@@ -132,16 +132,6 @@ export const ProductCard = ({
               <MessageCircle className="w-4 h-4" />
             </Button>
           )}
-          {isOwner && (
-            <Button
-              size="icon"
-              variant="destructive"
-              className="rounded-lg"
-              onClick={handleDelete}
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
-          )}
         </div>
       </div>
       
