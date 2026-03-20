@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Upload, X, Image, Video, Search } from "lucide-react";
+import { X, Image, Video } from "lucide-react";
 import { z } from "zod";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -33,18 +33,14 @@ interface AddProductModalProps {
 }
 
 const categories = [
-  "Electronics",
-  "Clothing",
-  "Furniture",
-  "Vehicles",
-  "Home & Garden",
-  "Sports",
-  "Books",
-  "Other",
+  "Electronics", "Clothing", "Furniture", "Vehicles",
+  "Home & Garden", "Sports", "Books", "Other",
 ];
 
 const ACCEPTED_TYPES = "image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime";
 const MAX_FILE_SIZE = 2 * 1024 * 1024 * 1024; // 2GB
+const MAX_FILES = 10;
+const MAX_VIDEOS = 2;
 
 export const AddProductModal = ({ open, onClose, country }: AddProductModalProps) => {
   const { user } = useAuth();
@@ -56,41 +52,61 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
   const [contact, setContact] = useState("");
   const [selectedCountry, setSelectedCountry] = useState(country || "");
   const [submitting, setSubmitting] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0];
-    if (!selected) return;
+  const videoCount = files.filter(f => f.type.startsWith("video/")).length;
 
-    if (selected.size > MAX_FILE_SIZE) {
-      toast.error("File is too large (max 2GB)");
-      return;
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = Array.from(e.target.files || []);
+    if (!selected.length) return;
+
+    const newFiles: File[] = [];
+    let currentVideos = videoCount;
+
+    for (const file of selected) {
+      if (files.length + newFiles.length >= MAX_FILES) {
+        toast.error(`Maksimumi ${MAX_FILES} skedarë`);
+        break;
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(`${file.name} është shumë i madh (max 2GB)`);
+        continue;
+      }
+      if (file.type.startsWith("video/")) {
+        if (currentVideos >= MAX_VIDEOS) {
+          toast.error(`Maksimumi ${MAX_VIDEOS} video`);
+          continue;
+        }
+        currentVideos++;
+      }
+      newFiles.push(file);
     }
 
-    setFile(selected);
-    const url = URL.createObjectURL(selected);
-    setPreview(url);
-  };
+    if (newFiles.length > 0) {
+      setFiles(prev => [...prev, ...newFiles]);
+      const newPreviews = newFiles.map(f => URL.createObjectURL(f));
+      setPreviews(prev => [...prev, ...newPreviews]);
+    }
 
-  const removeFile = () => {
-    setFile(null);
-    if (preview) URL.revokeObjectURL(preview);
-    setPreview(null);
     if (fileRef.current) fileRef.current.value = "";
   };
 
-  const isVideo = file?.type.startsWith("video/");
+  const removeFile = (index: number) => {
+    URL.revokeObjectURL(previews[index]);
+    setFiles(prev => prev.filter((_, i) => i !== index));
+    setPreviews(prev => prev.filter((_, i) => i !== index));
+  };
 
   const productSchema = z.object({
-    title: z.string().trim().min(1, "Title is required").max(200, "Title too long"),
-    price: z.string().trim().min(1, "Price is required").max(100, "Price too long"),
-    description: z.string().trim().min(1, "Description is required").max(5000, "Description too long"),
-    category: z.string().min(1, "Category is required"),
-    contact: z.string().trim().min(1, "Contact is required").max(200, "Contact too long"),
-    country: z.string().min(1, "Country is required"),
+    title: z.string().trim().min(1, "Titulli kërkohet").max(200),
+    price: z.string().trim().min(1, "Çmimi kërkohet").max(100),
+    description: z.string().trim().min(1, "Përshkrimi kërkohet").max(5000),
+    category: z.string().min(1, "Kategoria kërkohet"),
+    contact: z.string().trim().min(1, "Kontakti kërkohet").max(200),
+    country: z.string().min(1, "Vendi kërkohet"),
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -105,13 +121,13 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
       return;
     }
 
-    if (!file) {
-      toast.error("You must upload a photo or video");
+    if (files.length === 0) {
+      toast.error("Duhet të ngarkoni të paktën një foto ose video");
       return;
     }
 
     if (!user) {
-      toast.error("You must sign in to post");
+      toast.error("Duhet të identifikoheni për të postuar");
       return;
     }
 
@@ -119,24 +135,21 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
     setUploadProgress(10);
 
     try {
-      const ext = file.name.split(".").pop();
-      const filePath = `${user.id}/${crypto.randomUUID()}.${ext}`;
+      // Upload all files in parallel
+      const uploadPromises = files.map(async (file) => {
+        const ext = file.name.split(".").pop();
+        const filePath = `${user.id}/${crypto.randomUUID()}.${ext}`;
+        const { error: uploadError } = await supabase.storage
+          .from("product-media")
+          .upload(filePath, file, { contentType: file.type });
+        if (uploadError) throw uploadError;
+        const { data: urlData } = supabase.storage.from("product-media").getPublicUrl(filePath);
+        return urlData.publicUrl;
+      });
 
       setUploadProgress(30);
-
-      const { error: uploadError } = await supabase.storage
-        .from("product-media")
-        .upload(filePath, file, { contentType: file.type });
-
-      if (uploadError) throw uploadError;
-
+      const mediaUrls = await Promise.all(uploadPromises);
       setUploadProgress(70);
-
-      const { data: urlData } = supabase.storage
-        .from("product-media")
-        .getPublicUrl(filePath);
-
-      const imageUrl = urlData.publicUrl;
 
       const { error } = await supabase.from("products").insert({
         title: parsed.data.title,
@@ -146,26 +159,23 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
         contact: parsed.data.contact,
         country: parsed.data.country,
         user_id: user.id,
-        image_url: imageUrl,
+        image_url: mediaUrls[0], // first as thumbnail
+        media_urls: mediaUrls,
       });
 
       if (error) throw error;
 
       setUploadProgress(100);
-      toast.success("Product posted successfully!");
+      toast.success("Produkti u postua me sukses!");
       queryClient.invalidateQueries({ queryKey: ["products"] });
       onClose();
-      setTitle("");
-      setPrice("");
-      setDescription("");
-      setCategory("");
-      setContact("");
-      setSelectedCountry("");
-      removeFile();
-      setUploadProgress(0);
+      setTitle(""); setPrice(""); setDescription(""); setCategory("");
+      setContact(""); setSelectedCountry("");
+      previews.forEach(p => URL.revokeObjectURL(p));
+      setFiles([]); setPreviews([]); setUploadProgress(0);
     } catch (err) {
       console.error("Error posting product:", err);
-      toast.error("Something went wrong. Please try again.");
+      toast.error("Diçka shkoi keq. Provoni përsëri.");
     } finally {
       setSubmitting(false);
     }
@@ -175,66 +185,42 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="text-2xl">Post New Product</DialogTitle>
+          <DialogTitle className="text-2xl">Posto Produkt të Ri</DialogTitle>
           <DialogDescription>
-            Fill in the product details to publish it immediately
+            Plotësoni detajet e produktit për ta publikuar menjëherë
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6 pt-4">
           <div className="space-y-2">
-            <Label htmlFor="title">Product Title*</Label>
-            <Input
-              id="title"
-              placeholder="e.g. iPhone 14 Pro in excellent condition"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
+            <Label htmlFor="title">Titulli i Produktit*</Label>
+            <Input id="title" placeholder="p.sh. iPhone 14 Pro në gjendje të shkëlqyer" value={title} onChange={(e) => setTitle(e.target.value)} />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="price">Price*</Label>
-              <Input
-                id="price"
-                type="text"
-                placeholder="e.g. $50, Free, Negotiable"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                maxLength={100}
-              />
+              <Label htmlFor="price">Çmimi*</Label>
+              <Input id="price" type="text" placeholder="p.sh. $50, Falas, I negociueshëm" value={price} onChange={(e) => setPrice(e.target.value)} maxLength={100} />
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="category">Category*</Label>
+              <Label htmlFor="category">Kategoria*</Label>
               <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger id="category">
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
+                <SelectTrigger id="category"><SelectValue placeholder="Zgjidhni kategorinë" /></SelectTrigger>
                 <SelectContent>
-                  {categories.map((cat) => (
-                    <SelectItem key={cat} value={cat}>
-                      {cat}
-                    </SelectItem>
-                  ))}
+                  {categories.map((cat) => (<SelectItem key={cat} value={cat}>{cat}</SelectItem>))}
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="country">Country*</Label>
+            <Label htmlFor="country">Vendi*</Label>
             <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-              <SelectTrigger id="country">
-                <SelectValue placeholder="Select country" />
-              </SelectTrigger>
+              <SelectTrigger id="country"><SelectValue placeholder="Zgjidhni vendin" /></SelectTrigger>
               <SelectContent className="max-h-60">
                 {countries.map((c) => (
                   <SelectItem key={c.code} value={c.code}>
-                    <span className="flex items-center gap-2">
-                      <span>{c.flag}</span>
-                      <span>{c.name}</span>
-                    </span>
+                    <span className="flex items-center gap-2"><span>{c.flag}</span><span>{c.name}</span></span>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -242,31 +228,54 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description*</Label>
-            <Textarea
-              id="description"
-              placeholder="Describe your product..."
-              rows={4}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
+            <Label htmlFor="description">Përshkrimi*</Label>
+            <Textarea id="description" placeholder="Përshkruani produktin tuaj..." rows={4} value={description} onChange={(e) => setDescription(e.target.value)} />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="contact">Contact* (phone or email)</Label>
-            <Input
-              id="contact"
-              placeholder="e.g. +1 234 567 8900 or email@example.com"
-              value={contact}
-              onChange={(e) => setContact(e.target.value)}
-            />
+            <Label htmlFor="contact">Kontakti* (telefon ose email)</Label>
+            <Input id="contact" placeholder="p.sh. +355 69 123 4567 ose email@shembull.com" value={contact} onChange={(e) => setContact(e.target.value)} />
           </div>
 
-          {/* File Upload - Required */}
+          {/* Multi-file Upload */}
           <div className="space-y-2">
-            <Label>Product Photo or Video* <span className="text-destructive">(required)</span></Label>
+            <Label>Foto ose Video* <span className="text-xs text-muted-foreground">(max {MAX_FILES} skedarë, max {MAX_VIDEOS} video)</span></Label>
 
-            {!file ? (
+            {files.length > 0 && (
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                {files.map((file, i) => (
+                  <div key={i} className="relative border border-border rounded-lg overflow-hidden aspect-square bg-secondary/30">
+                    <Button
+                      type="button" variant="destructive" size="icon"
+                      className="absolute top-1 right-1 z-10 h-6 w-6 rounded-full"
+                      onClick={() => removeFile(i)}
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
+                    {file.type.startsWith("video/") ? (
+                      <video src={previews[i]} className="w-full h-full object-cover" />
+                    ) : (
+                      <img src={previews[i]} alt="Preview" className="w-full h-full object-cover" />
+                    )}
+                    {file.type.startsWith("video/") && (
+                      <div className="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded">VIDEO</div>
+                    )}
+                  </div>
+                ))}
+
+                {files.length < MAX_FILES && (
+                  <div
+                    onClick={() => fileRef.current?.click()}
+                    className="border-2 border-dashed border-border rounded-lg aspect-square flex flex-col items-center justify-center hover:border-primary transition-colors cursor-pointer"
+                  >
+                    <Image className="w-6 h-6 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground mt-1">Shto</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {files.length === 0 && (
               <div
                 onClick={() => fileRef.current?.click()}
                 className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-smooth cursor-pointer"
@@ -275,60 +284,20 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
                   <Image className="w-8 h-8 text-muted-foreground" />
                   <Video className="w-8 h-8 text-muted-foreground" />
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  Click to upload a photo or video
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  JPG, PNG, WebP, GIF, MP4, WebM (max 2GB)
-                </p>
-              </div>
-            ) : (
-              <div className="relative border border-border rounded-lg overflow-hidden">
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="icon"
-                  className="absolute top-2 right-2 z-10 h-7 w-7 rounded-full"
-                  onClick={removeFile}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-
-                {isVideo ? (
-                  <video
-                    src={preview!}
-                    controls
-                    className="w-full max-h-64 object-contain bg-secondary/30"
-                  />
-                ) : (
-                  <img
-                    src={preview!}
-                    alt="Preview"
-                    className="w-full max-h-64 object-contain bg-secondary/30"
-                  />
-                )}
+                <p className="text-sm text-muted-foreground">Klikoni për të ngarkuar foto ose video</p>
+                <p className="text-xs text-muted-foreground mt-1">JPG, PNG, WebP, GIF, MP4, WebM (max 2GB)</p>
               </div>
             )}
 
-            <input
-              ref={fileRef}
-              type="file"
-              accept={ACCEPTED_TYPES}
-              onChange={handleFileChange}
-              className="hidden"
-            />
+            <input ref={fileRef} type="file" accept={ACCEPTED_TYPES} onChange={handleFileChange} className="hidden" multiple />
           </div>
 
-          {submitting && uploadProgress > 0 && (
-            <Progress value={uploadProgress} className="h-2" />
-          )}
+          {submitting && uploadProgress > 0 && <Progress value={uploadProgress} className="h-2" />}
 
           <div className="flex gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={onClose} className="flex-1">
-              Cancel
-            </Button>
+            <Button type="button" variant="outline" onClick={onClose} className="flex-1">Anulo</Button>
             <Button type="submit" variant="accent" className="flex-1" disabled={submitting}>
-              {submitting ? "Uploading..." : "Publish Product"}
+              {submitting ? "Duke ngarkuar..." : "Publiko Produktin"}
             </Button>
           </div>
         </form>
