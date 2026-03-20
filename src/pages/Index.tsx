@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { ProductCard } from "@/components/ProductCard";
 import { AddProductModal } from "@/components/AddProductModal";
 import { AuthPromptModal } from "@/components/AuthPromptModal";
+import { ProductDetailModal } from "@/components/ProductDetailModal";
 import { Filters } from "@/components/Filters";
 
 import { Button } from "@/components/ui/button";
@@ -25,11 +26,12 @@ const Index = () => {
   const [selectedCountry] = useState<string>("al");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const { data: products = [] } = useProducts();
   const getCountryName = useCountryNames();
 
   const filteredProducts = products.filter((product) => {
-    const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = product.title?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
     const matchesCountry = !preferredCountry || product.country === preferredCountry;
     return matchesSearch && matchesCategory && matchesCountry;
@@ -179,16 +181,16 @@ const Index = () => {
                 {filteredProducts.map((product, i) => (
                   <div key={product.id} className="animate-fade-in" style={{ animationDelay: `${0.05 * i}s` }}>
                     <ProductCard
-                      id={product.id}
-                      title={product.title}
-                      price={product.price}
+                      id={product.id!}
+                      title={product.title!}
+                      price={product.price!}
                       image={product.image_url || "/placeholder.svg"}
                       location={product.country ? getCountryName(product.country) : "Global"}
-                      category={product.category}
+                      category={product.category!}
                       rating={0}
                       reviewCount={0}
-                      userId={product.user_id}
-                      onClick={() => console.log("Product clicked:", product.id)}
+                      userId={product.user_id || undefined}
+                      onClick={() => setSelectedProduct(product)}
                     />
                   </div>
                 ))}
@@ -199,6 +201,16 @@ const Index = () => {
       </main>
 
       <AddProductModal open={showAddModal} onClose={() => setShowAddModal(false)} country={selectedCountry} />
+      
+      <ProductDetailModal
+        open={!!selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        product={selectedProduct ? {
+          ...selectedProduct,
+          media_urls: selectedProduct.media_urls as string[] | null,
+        } : null}
+        countryName={selectedProduct?.country ? getCountryName(selectedProduct.country) : undefined}
+      />
     </div>
   );
 };
