@@ -112,11 +112,26 @@ export const ProductCard = ({
       onClick={onClick}
     >
       <div className="aspect-[4/3] overflow-hidden bg-secondary/30 relative">
-        <img
-          src={image}
-          alt={title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-        />
+        {firstIsVideo ? (
+          <>
+            <img
+              src={videoThumb || image || "/placeholder.svg"}
+              alt={title}
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-black/50 flex items-center justify-center">
+                <Play className="w-6 h-6 text-white fill-white" />
+              </div>
+            </div>
+          </>
+        ) : (
+          <img
+            src={image}
+            alt={title}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          />
+        )}
         <Badge 
           variant="secondary" 
           className="absolute top-4 left-4 font-medium glass-strong rounded-lg"
