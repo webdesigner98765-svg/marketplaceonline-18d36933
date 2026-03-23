@@ -190,6 +190,7 @@ const Index = () => {
                       rating={0}
                       reviewCount={0}
                       userId={product.user_id || undefined}
+                      mediaUrls={Array.isArray(product.media_urls) ? (product.media_urls as string[]) : undefined}
                       onClick={() => setSelectedProduct(product)}
                     />
                   </div>
