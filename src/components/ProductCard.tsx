@@ -34,6 +34,7 @@ export const ProductCard = ({
   rating,
   reviewCount,
   userId,
+  mediaUrls,
   onClick,
 }: ProductCardProps) => {
   const { user } = useAuth();
@@ -41,6 +42,35 @@ export const ProductCard = ({
   const queryClient = useQueryClient();
   const isOwner = user && userId && user.id === userId;
   const [copied, setCopied] = useState(false);
+  const [videoThumb, setVideoThumb] = useState<string | null>(null);
+
+  const isVideo = (url: string) => /\.(mp4|webm|mov|quicktime)(\?|$)/i.test(url) || url.includes("video");
+  const firstMedia = mediaUrls?.[0] || image;
+  const firstIsVideo = isVideo(firstMedia);
+
+  // Generate video thumbnail at 5th second
+  useState(() => {
+    if (firstIsVideo && firstMedia) {
+      const video = document.createElement("video");
+      video.crossOrigin = "anonymous";
+      video.src = firstMedia;
+      video.currentTime = 5;
+      video.muted = true;
+      video.addEventListener("seeked", () => {
+        try {
+          const canvas = document.createElement("canvas");
+          canvas.width = video.videoWidth || 640;
+          canvas.height = video.videoHeight || 360;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            setVideoThumb(canvas.toDataURL("image/jpeg", 0.8));
+          }
+        } catch {}
+      });
+      video.load();
+    }
+  });
 
   const productUrl = `${window.location.origin}/?product=${id}`;
   const shareText = `${title} - ${price}`;
