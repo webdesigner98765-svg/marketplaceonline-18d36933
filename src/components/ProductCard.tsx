@@ -49,7 +49,7 @@ export const ProductCard = ({
   const firstIsVideo = isVideo(firstMedia);
 
   // Generate video thumbnail at 5th second
-  useState(() => {
+  useEffect(() => {
     if (firstIsVideo && firstMedia) {
       const video = document.createElement("video");
       video.crossOrigin = "anonymous";
@@ -70,7 +70,7 @@ export const ProductCard = ({
       });
       video.load();
     }
-  });
+  }, [firstIsVideo, firstMedia]);
 
   const productUrl = `${window.location.origin}/?product=${id}`;
   const shareText = `${title} - ${price}`;
