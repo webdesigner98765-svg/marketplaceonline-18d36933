@@ -1,4 +1,4 @@
-import { Star, MapPin, Trash2, MessageCircle, Share2, Copy, Check } from "lucide-react";
+import { Star, MapPin, Trash2, MessageCircle, Share2, Copy, Check, Play } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface ProductCardProps {
   id: string;
@@ -20,6 +20,7 @@ interface ProductCardProps {
   rating: number;
   reviewCount: number;
   userId?: string;
+  mediaUrls?: string[];
   onClick: () => void;
 }
 
@@ -33,6 +34,7 @@ export const ProductCard = ({
   rating,
   reviewCount,
   userId,
+  mediaUrls,
   onClick,
 }: ProductCardProps) => {
   const { user } = useAuth();
@@ -40,6 +42,35 @@ export const ProductCard = ({
   const queryClient = useQueryClient();
   const isOwner = user && userId && user.id === userId;
   const [copied, setCopied] = useState(false);
+  const [videoThumb, setVideoThumb] = useState<string | null>(null);
+
+  const isVideo = (url: string) => /\.(mp4|webm|mov|quicktime)(\?|$)/i.test(url) || url.includes("video");
+  const firstMedia = mediaUrls?.[0] || image;
+  const firstIsVideo = isVideo(firstMedia);
+
+  // Generate video thumbnail at 5th second
+  useEffect(() => {
+    if (firstIsVideo && firstMedia) {
+      const video = document.createElement("video");
+      video.crossOrigin = "anonymous";
+      video.src = firstMedia;
+      video.currentTime = 5;
+      video.muted = true;
+      video.addEventListener("seeked", () => {
+        try {
+          const canvas = document.createElement("canvas");
+          canvas.width = video.videoWidth || 640;
+          canvas.height = video.videoHeight || 360;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            setVideoThumb(canvas.toDataURL("image/jpeg", 0.8));
+          }
+        } catch {}
+      });
+      video.load();
+    }
+  }, [firstIsVideo, firstMedia]);
 
   const productUrl = `${window.location.origin}/?product=${id}`;
   const shareText = `${title} - ${price}`;
@@ -81,11 +112,26 @@ export const ProductCard = ({
       onClick={onClick}
     >
       <div className="aspect-[4/3] overflow-hidden bg-secondary/30 relative">
-        <img
-          src={image}
-          alt={title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-        />
+        {firstIsVideo ? (
+          <>
+            <img
+              src={videoThumb || image || "/placeholder.svg"}
+              alt={title}
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-black/50 flex items-center justify-center">
+                <Play className="w-6 h-6 text-white fill-white" />
+              </div>
+            </div>
+          </>
+        ) : (
+          <img
+            src={image}
+            alt={title}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          />
+        )}
         <Badge 
           variant="secondary" 
           className="absolute top-4 left-4 font-medium glass-strong rounded-lg"

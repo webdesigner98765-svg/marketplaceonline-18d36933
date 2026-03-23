@@ -41,6 +41,7 @@ const ACCEPTED_TYPES = "image/jpeg,image/png,image/webp,image/gif,video/mp4,vide
 const MAX_FILE_SIZE = 2 * 1024 * 1024 * 1024; // 2GB
 const MAX_FILES = 10;
 const MAX_VIDEOS = 2;
+const MIN_VIDEO_DURATION = 15; // seconds
 
 export const AddProductModal = ({ open, onClose, country }: AddProductModalProps) => {
   const { user } = useAuth();
@@ -59,7 +60,20 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
 
   const videoCount = files.filter(f => f.type.startsWith("video/")).length;
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const getVideoDuration = (file: File): Promise<number> => {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement("video");
+      video.preload = "metadata";
+      video.onloadedmetadata = () => {
+        URL.revokeObjectURL(video.src);
+        resolve(video.duration);
+      };
+      video.onerror = () => reject(new Error("Cannot read video"));
+      video.src = URL.createObjectURL(file);
+    });
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(e.target.files || []);
     if (!selected.length) return;
 
@@ -78,6 +92,16 @@ export const AddProductModal = ({ open, onClose, country }: AddProductModalProps
       if (file.type.startsWith("video/")) {
         if (currentVideos >= MAX_VIDEOS) {
           toast.error(`Maksimumi ${MAX_VIDEOS} video`);
+          continue;
+        }
+        try {
+          const duration = await getVideoDuration(file);
+          if (duration < MIN_VIDEO_DURATION) {
+            toast.error(`${file.name} është shumë e shkurtër (min ${MIN_VIDEO_DURATION} sekonda)`);
+            continue;
+          }
+        } catch {
+          toast.error(`Nuk mund të lexohet video: ${file.name}`);
           continue;
         }
         currentVideos++;
