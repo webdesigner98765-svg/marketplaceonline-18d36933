@@ -41,6 +41,7 @@ const ACCEPTED_TYPES = "image/jpeg,image/png,image/webp,image/gif,video/mp4,vide
 const MAX_FILE_SIZE = 2 * 1024 * 1024 * 1024; // 2GB
 const MAX_FILES = 10;
 const MAX_VIDEOS = 2;
+const MIN_VIDEO_DURATION = 15; // seconds
 
 export const AddProductModal = ({ open, onClose, country }: AddProductModalProps) => {
   const { user } = useAuth();

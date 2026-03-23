@@ -20,6 +20,7 @@ interface ProductCardProps {
   rating: number;
   reviewCount: number;
   userId?: string;
+  mediaUrls?: string[];
   onClick: () => void;
 }
 
