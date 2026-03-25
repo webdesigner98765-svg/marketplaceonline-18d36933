@@ -3,11 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import type { User, Session } from "@supabase/supabase-js";
 
-const isLovableDomain = () => {
-  const hostname = window.location.hostname;
-  return hostname.includes("lovable.app") || hostname.includes("lovableproject.com") || hostname === "localhost";
-};
-
 interface AuthContextType {
   user: User | null;
   session: Session | null;
