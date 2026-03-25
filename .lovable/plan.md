@@ -1,97 +1,41 @@
 
+Qëllimi: ta bëjmë Google login të funksionojë edhe kur projekti merret nga GitHub dhe hapet jashtë Lovable.
 
-# Google Login + Database Setup for Marketplace
+1. Shkaku kryesor që shoh në kod
+- Te `src/contexts/AuthContext.tsx` ka 2 rrugë të ndryshme:
+  - në `lovable.app` / `localhost` përdoret `lovable.auth.signInWithOAuth("google")`
+  - në hoste të tjera përdoret `supabase.auth.signInWithOAuth(...)`
+- Për projektet me Lovable Cloud, Google OAuth duhet të kalojë me `lovable.auth.signInWithOAuth(...)`, jo me fallback-un direkt.
+- Gabimi `accounts.google.com refused to connect / ERR_BLOCKED_BY_RESPONSE` përputhet me një flow OAuth të nisur në mënyrën e gabuar / të bllokuar jashtë konfigurimit të menaxhuar.
 
-## Overview
-Set up Google authentication so users must sign in with their Google account before posting products. Products will be saved to a real database. Browsing products remains open to everyone -- only posting requires login.
+2. Çfarë do të ndryshoj
+- Heq `isLovableDomain()` dhe të gjithë branch-in me `supabase.auth.signInWithOAuth`.
+- Standardizoj `signInWithGoogle()` që të përdorë vetëm:
+  - `lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin })`
+- Opsionalisht shtoj `extraParams: { prompt: "select_account" }` që zgjedhja e llogarisë të jetë më e qëndrueshme.
+- Përmirësoj mesazhin e gabimit te `AuthPromptModal` që të tregojë kur problemi është konfigurimi i redirect URL-ve, jo vetëm “Something went wrong”.
 
-## What will change
+3. Çfarë është tashmë në rregull
+- `vite.config.ts` tashmë ka `/~oauth` te `navigateFallbackDenylist`, kështu që PWA nuk duhet ta kapë callback-un e auth-it.
+- Nuk shoh nevojë për ndryshim në databazë apo migration; problemi është në flow-in e hyrjes dhe konfigurimin e deploy-it.
 
-### 1. Google Authentication
-- Add a "Sign in with Google" button in the header
-- When a user clicks "Post Product" without being logged in, they will be prompted to sign in first
-- Once signed in, the user's name/avatar from Google will appear in the header
-- A sign-out option will be available
+4. Çfarë duhet verifikuar jashtë kodit
+- Google sign-in duhet të jetë aktiv në backend.
+- Te redirect URLs duhet të jetë i shtuar çdo host ku po e teston:
+  - `http://localhost:8080` (ose porti yt)
+  - domeni/deploy jashtë Lovable
+- Nëse po përdor Client ID/Secret tëndin, në Google Cloud duhet të jenë shtuar:
+  - callback URL që jep backend-i
+  - origin i faqes tënde
+- Nëse hostohet si SPA jashtë Lovable (Vercel/Netlify/GitHub Pages etj.), duhet fallback te `index.html`; përndryshe rikthimi pas login mund të prishet.
 
-### 2. Database Tables
-Create the following tables to store data:
+5. Si do ta verifikoj pas implementimit
+- Test në lokal
+- Test në deploy jashtë Lovable
+- Kontroll që “Continue with Google” hap flow normal dhe kthen përdoruesin me session aktive
+- Kontroll që nuk shfaqet më `ERR_BLOCKED_BY_RESPONSE`
 
-- **profiles** -- stores user info (name, avatar, email) linked to their Google account
-- **products** -- stores all posted products (title, price, description, category, country, image URL, linked to the user who posted it)
-
-### 3. Updated App Flow
-- Everyone can browse and search products without logging in
-- Clicking "Post Product" or "Start Selling" checks if the user is logged in
-  - If not logged in: shows a sign-in prompt with Google button
-  - If logged in: opens the product form as usual
-- Products are saved to the database and displayed in real-time
-- Each product shows who posted it
-
----
-
-## Technical Details
-
-### Step 1: Configure Google OAuth
-- Use the Lovable Cloud managed Google OAuth (no API keys needed)
-- Configure social auth provider via the platform tool
-- This generates the `src/integrations/lovable/` module automatically
-
-### Step 2: Database Migration
-Create tables with proper security:
-
-```text
-profiles table:
-  - id (uuid, references auth.users)
-  - full_name (text)
-  - avatar_url (text)
-  - email (text)
-  - created_at (timestamp)
-
-products table:
-  - id (uuid, primary key)
-  - user_id (uuid, references profiles)
-  - title (text)
-  - price (numeric)
-  - description (text)
-  - category (text)
-  - country (text)
-  - image_url (text, nullable)
-  - created_at (timestamp)
-```
-
-Security policies:
-- **products**: Anyone can read (public marketplace), only authenticated users can insert their own products, only the owner can update/delete
-- **profiles**: Anyone can read, users can only update their own profile
-- Auto-create profile on Google sign-up via database trigger
-
-### Step 3: Auth Context Provider
-- Create `src/contexts/AuthContext.tsx` to manage authentication state globally
-- Provides current user, sign-in, sign-out functions
-- Listens to auth state changes
-
-### Step 4: Update Components
-
-**Header (`src/components/Header.tsx`)**:
-- Add user avatar + name when logged in
-- Add sign-in / sign-out button
-- Show Google sign-in option
-
-**Index page (`src/pages/Index.tsx`)**:
-- Fetch products from database instead of empty array
-- Pass auth state to control "Post Product" behavior
-- When clicking post buttons, check login status first
-
-**AddProductModal (`src/components/AddProductModal.tsx`)**:
-- Save product to database on submit
-- Attach logged-in user's ID and selected country
-- Show success/error feedback
-
-**New: AuthPromptModal**:
-- A modal that appears when unauthenticated users try to post
-- Shows "Sign in with Google" button
-- Clean design matching the app's style
-
-### Step 5: App Router Update
-- Wrap app with AuthContext provider
-- Add auth callback handling for Google redirect
-
+Detaje teknike
+- File kryesor për ndryshim: `src/contexts/AuthContext.tsx`
+- File dytësor për UX të gabimit: `src/components/AuthPromptModal.tsx`
+- Nuk do prek `src/integrations/lovable/index.ts` dhe `src/integrations/supabase/client.ts`
